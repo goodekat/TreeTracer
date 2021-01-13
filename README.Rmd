@@ -1,0 +1,60 @@
+---
+output: rmarkdown::github_document
+always_allow_html: yes
+bibliography: inst/references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  dpi = 300,
+  # fig.width = 6,
+  # fig.height = 6,
+  out.width = "75%",
+  fig.align = "center"
+)
+```
+
+# TreeTracer
+
+`r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")` `r emo::ji("tree")`
+
+The beginnings...
+
+TreeTracer is an R package for creating trace plots of trees from random forests fit using the randomForest R package. Trace plots are useful tools for visually comparing trees from a random forest. See @urbanek:2008 for additional information about trace plots. 
+
+Examples:
+
+```{r}
+# Load the package
+library(TreeTracer)
+```
+
+```{r}
+# Fit a random forest using the iris data
+set.seed(71)
+iris.rf <- randomForest::randomForest(Species ~ ., data = iris)
+```
+
+```{r}
+# Generate a trace plot of the first 25 trees in the forest
+trace_plot(
+  rf = iris.rf,
+  train = iris[, -5],
+  tree_ids = 1:25
+)
+```
+
+```{r}
+# Adjust the width of horizontal feature lines and alpha of traces
+trace_plot(
+  rf = iris.rf,
+  train = iris[, -5],
+  tree_ids = 1:25,
+  width = 0.5,
+  alpha = 0.25
+)
+```
+
+## References
+

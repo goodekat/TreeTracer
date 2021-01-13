@@ -4,7 +4,7 @@ Title: Trace Plots Using ggplot2
 Version: 0.1.0
 Author: Katherine Goode
 Maintainer: Katherine Goode <kgoode@iastate.edu>
-Description: Plots trace plots of trees and random forests using ggplot2
+Description: TreeTracer provides functions for creating trace plots of trees from random forests.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -14,4 +14,8 @@ Imports:
   ggplot2,
   janitor,
   randomForest,
+  rlang,
+  purrr,
+  Rdpack,
   tidyr
+RdMacros: Rdpack

@@ -1,20 +1,33 @@
+#' Extract and organize information from a random forest tree
+#'
 #' @export get_tree_data
 #'
-#' @importFrom dplyr %>% filter left_join rename select
+#' @importFrom dplyr %>% arrange filter left_join rename select
 #' @importFrom janitor clean_names
 #' @importFrom randomForest getTree
+#' @importFrom rlang .data
+#'
+#' @param rf random forest model fit using randomForest
+#' @param k number identifying the tree in the random forest from which
+#'          to extract information
+#'
+#' @examples
+#'
+#' # Fit a random forest using the iris data
+#' set.seed(71)
+#' iris.rf <- randomForest::randomForest(Species ~ ., data = iris)
+#'
+#' # Extract tree data from the first tree in the random forest
+#' get_tree_data(iris.rf, 1)
 
 get_tree_data <- function(rf, k) {
-
-  # rf: randomforest
-  # k: index
 
   # Extract the tree from the random forest and add a parent number
   tree <- randomForest::getTree(rf, k = k, labelVar = TRUE) %>% janitor::clean_names()
   tree$parent <- 1:nrow(tree)
 
   # Remove the tree leaves
-  splits <- tree %>% filter(status != -1)
+  splits <- tree %>% filter(.data$status != -1)
 
   # Determine the tree level of each split
   splits$tree_level <- sapply(splits$parent, function(i) get_tree_level(splits, i))
@@ -37,20 +50,20 @@ get_tree_data <- function(rf, k) {
   segments <-
     segments %>%
     left_join(
-      splits %>% select(parent, split_var, split_point, tree_level),
+      splits %>% select(.data$parent, .data$split_var, .data$split_point, .data$tree_level),
       by = c("node_child" = "parent")) %>%
     rename(
-      split_var_child = split_var,
-      split_point_child = split_point,
-      tree_level_child = tree_level
+      split_var_child = .data$split_var,
+      split_point_child = .data$split_point,
+      tree_level_child = .data$tree_level
     ) %>%
     left_join(
-      splits %>% select(parent, split_var, split_point, tree_level),
+      splits %>% select(.data$parent, .data$split_var, .data$split_point, .data$tree_level),
       by = c("node_parent" = "parent")) %>%
     rename(
-      split_var_parent = split_var,
-      split_point_parent = split_point,
-      tree_level_parent = tree_level
+      split_var_parent = .data$split_var,
+      split_point_parent = .data$split_point,
+      tree_level_parent = .data$tree_level
     )
 
   # Number the branches
@@ -64,7 +77,7 @@ get_tree_data <- function(rf, k) {
     split_var = c(as.character(split_var_child), as.character(split_var_parent)),
     split_point = c(split_point_child, split_point_parent)
   )) %>%
-    arrange(tree, tree_branch, tree_level) %>%
-    filter(!is.na(split_var))
+    arrange(.data$tree, .data$tree_branch, .data$tree_level) %>%
+    filter(!is.na(.data$split_var))
 
 }

@@ -1,12 +1,52 @@
+#' Create a trace plot of trees from a random forest
+#'
+#' Trace plots are useful tools for visually comparing trees from a random
+#' forest. This functions creates a trace plot given a set of trees from a
+#' random forest fit using the randomForest package. For more information on
+#' trace plots, see \insertCite{urbanek:2008;textual}{TreeTracer}.
+#'
+#' @references{
+#'   \insertRef{urbanek:2008}{TreeTracer}
+#' }
+#'
 #' @export trace_plot
 #'
 #' @importFrom dplyr %>% distinct select
 #' @importFrom ggplot2 aes element_blank ggplot geom_line geom_point geom_segment geom_text theme
+#' @importFrom purrr map_df
+#' @importFrom Rdpack reprompt
+#' @importFrom rlang .data
+#'
+#' @param rf random forest model fit using randomForest
+#' @param train features used to train the random forest which the tree is from
+#' @param tree_ids vector of numbers specifying the trees to include in the trace plot
+#' @param width specifies the width of the horizontal feature lines in a trace plot
+#'              (a number between 0 and 1; default is 0.8)
+#' @param alpha alpha value for the lines in the trace plot (a number between 0
+#'              and 1; default is 0.5)
+#'
+#' @examples
+#'
+#' # Fit a random forest using the iris data
+#' set.seed(71)
+#' iris.rf <- randomForest::randomForest(Species ~ ., data = iris)
+#'
+#' # Generate a trace plot of the first 25 trees in the forest
+#' trace_plot(iris.rf, iris[,-5], 1:25)
 
-trace_plot <- function(trace_data, alpha = 0.5) {
+trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5) {
 
   # trace_data: output from get_trace_data function
   # alpha: alpha to use for the lines in the plot
+
+  # Obtain the trace data from the specified trees
+  trace_data <-
+    purrr::map_df(
+      .x = tree_ids,
+      .f = function(id)
+        get_tree_data(rf = rf , k = id)
+    ) %>%
+    get_trace_data(train = train, width = width)
 
   # Extract the levels that correspond to a tree
   trees = sort(unique(trace_data$tree))
@@ -16,14 +56,16 @@ trace_plot <- function(trace_data, alpha = 0.5) {
   # Convert categorical variables to factors
   trace_data <-
     trace_data %>%
-    mutate(tree = factor(tree, levels = trees),
-           tree_branch = factor(tree_branch, levels = tree_branches),
-           tree_level = factor(tree_level, levels = tree_levels))
+    mutate(
+      tree = factor(.data$tree, levels = trees),
+      tree_branch = factor(.data$tree_branch, levels = tree_branches),
+      tree_level = factor(.data$tree_level, levels = tree_levels)
+    )
 
   # Extract the split variables to use as labels in the trace plot
   trace_labels <-
     trace_data %>%
-    select(tree_level, split_var, seg_xmid) %>%
+    select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
     distinct()
 
   # Create a trace plot
@@ -31,26 +73,26 @@ trace_plot <- function(trace_data, alpha = 0.5) {
     ggplot() +
     geom_segment(
       mapping = aes(
-        x = seg_xmin,
-        xend = seg_xmax,
-        y = tree_level,
-        yend = tree_level,
-        group = tree_level:factor(split_var)
+        x = .data$seg_xmin,
+        xend = .data$seg_xmax,
+        y = .data$tree_level,
+        yend = .data$tree_level,
+        group = .data$tree_level:factor(.data$split_var)
       )
     ) +
     geom_line(
       mapping = aes(
-        x = split_scaled,
-        y = tree_level,
-        group = factor(tree):factor(tree_branch)
+        x = .data$split_scaled,
+        y = .data$tree_level,
+        group = factor(.data$tree):factor(.data$tree_branch)
       ),
       alpha = alpha
     ) +
-    geom_point(mapping = aes(x = split_scaled, y = tree_level),
+    geom_point(mapping = aes(x = .data$split_scaled, y = .data$tree_level),
                shape = 3) +
     geom_text(
       data = trace_labels,
-      mapping = aes(x = seg_xmid, y = tree_level, label = split_var),
+      mapping = aes(x = .data$seg_xmid, y = .data$tree_level, label = .data$split_var),
       nudge_y = -0.1
     ) +
     theme(

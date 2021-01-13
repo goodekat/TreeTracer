@@ -1,7 +1,27 @@
+#' Convert tree information from a random forest to the structure for a trace plot
+#'
 #' @export get_trace_data
 #'
-#' @importFrom dplyr %>% group_by left_join mutate summarise
+#' @importFrom dplyr %>% everything group_by left_join mutate summarise
 #' @importFrom tidyr pivot_longer
+#' @importFrom rlang .data
+#'
+#' @param tree_data data.frame obtained using get_tree_data
+#' @param train features used to train the random forest which the tree is from
+#' @param width specifies the width of the horizontal feature lines in a trace plot
+#'              (a number between 0 and 1; default is 0.8)
+#'
+#' @examples
+#'
+#' # Fit a random forest using the iris data
+#' set.seed(71)
+#' iris.rf <- randomForest::randomForest(Species ~ ., data = iris)
+#'
+#' # Extract tree data from the first tree in the random forest
+#' tree_data <- get_tree_data(iris.rf, 1)
+#'
+#' # Obtain the trace data for the first tree in the random forest
+#' get_trace_data(tree_data, iris[,-5])
 
 get_trace_data <- function(tree_data, train, width = 0.8) {
 
@@ -31,10 +51,10 @@ get_trace_data <- function(tree_data, train, width = 0.8) {
   split_var_max_min <-
     train %>%
     pivot_longer(names_to = "split_var", cols = everything()) %>%
-    group_by(split_var) %>%
+    group_by(.data$split_var) %>%
     summarise(
-      split_var_max = max(value),
-      split_var_min = min(value),
+      split_var_max = max(.data$value),
+      split_var_min = min(.data$value),
       .groups = "drop"
     )
 
@@ -46,13 +66,13 @@ get_trace_data <- function(tree_data, train, width = 0.8) {
               y = trace_grid,
               by = c("tree_level", "split_var")) %>%
     left_join(y = split_var_max_min, by = "split_var") %>%
-    group_by(split_var) %>%
-    mutate(n_splits = length(unique(split_point))) %>%
+    group_by(.data$split_var) %>%
+    mutate(n_splits = length(unique(.data$split_point))) %>%
     mutate(split_scaled = ifelse(
-      n_splits == 1,
-      (seg_xmax + seg_xmin) / 2,
-      (seg_xmax - seg_xmin) / (split_var_max - split_var_min) *
-        (split_point - split_var_max) + seg_xmax
+      .data$n_splits == 1,
+      (.data$seg_xmax + .data$seg_xmin) / 2,
+      (.data$seg_xmax - .data$seg_xmin) / (.data$split_var_max - .data$split_var_min) *
+        (.data$split_point - .data$split_var_max) + .data$seg_xmax
     ))
 
   # Return the data to be used in the trace plot
