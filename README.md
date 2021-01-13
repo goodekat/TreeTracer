@@ -1,7 +1,7 @@
 
 # TreeTracer
 
-🌲 🎄 🌳 🌲 🌳 🌴 🎄 🎄 🎄 🌳 🌳 🎋 🎄 🎄
+🌴 🌲 🎋 🎋 🌲 🌴 🎋 🎄 🌲 🎋 🌲 🎋 🌳 🎋
 
 The beginnings…
 
@@ -28,24 +28,24 @@ iris.rf <- randomForest::randomForest(Species ~ ., data = iris)
 trace_plot(
   rf = iris.rf,
   train = iris[, -5],
-  tree_ids = 1:25
+  tree_ids = 1:10
 )
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-3-1.png" width="75%" style="display: block; margin: auto;" />
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
 # Adjust the width of horizontal feature lines and alpha of traces
 trace_plot(
   rf = iris.rf,
   train = iris[, -5],
-  tree_ids = 1:25,
+  tree_ids = 1:10,
   width = 0.5,
   alpha = 0.25
 )
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-4-1.png" width="75%" style="display: block; margin: auto;" />
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ## References
 
