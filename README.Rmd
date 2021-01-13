@@ -7,7 +7,9 @@ bibliography: inst/references.bib
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
-  dpi = 300
+  dpi = 300,
+  fig.height = 6, 
+  fig.width = 6
 )
 ```
 
