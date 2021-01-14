@@ -16,7 +16,8 @@ trace_plot(rf, train, tree_ids, width = 0.8, alpha = 0.5)
 \item{width}{specifies the width of the horizontal feature lines in a trace plot
 (a number between 0 and 1; default is 0.8)}
 
-\item{alpha}{alpha value for the lines in the trace plot (a number between 0 and 1)}
+\item{alpha}{alpha value for the lines in the trace plot (a number between 0
+and 1; default is 0.5)}
 }
 \description{
 Trace plots are useful tools for visually comparing trees from a random
@@ -26,12 +27,22 @@ trace plots, see \insertCite{urbanek:2008;textual}{TreeTracer}.
 }
 \examples{
 
-# Fit a random forest using the iris data
-set.seed(71)
-iris.rf <- randomForest::randomForest(Species ~ ., data = iris)
+# Load dplyr
+library(dplyr)
 
-# Generate a trace plot of the first 25 trees in the forest
-trace_plot(iris.rf, iris[,-5], 1:25)
+# Load the Palmer penguins data
+penguins <- na.omit(palmerpenguins::penguins)
+
+# Fit a random forest
+set.seed(71)
+penguin.rf <- randomForest::randomForest(species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g, data = penguins)
+
+# Generate a trace plot of the first 10 trees in the forest
+trace_plot(
+ rf = penguin.rf,
+ train = penguins \%>\% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+ tree_ids = 1:10
+)
 }
 \references{
 {

@@ -27,12 +27,22 @@
 #'
 #' @examples
 #'
-#' # Fit a random forest using the iris data
-#' set.seed(71)
-#' iris.rf <- randomForest::randomForest(Species ~ ., data = iris)
+#' # Load dplyr
+#' library(dplyr)
 #'
-#' # Generate a trace plot of the first 25 trees in the forest
-#' trace_plot(iris.rf, iris[,-5], 1:25)
+#' # Load the Palmer penguins data
+#' penguins <- na.omit(palmerpenguins::penguins)
+#'
+#' # Fit a random forest
+#' set.seed(71)
+#' penguin.rf <- randomForest::randomForest(species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g, data = penguins)
+#'
+#' # Generate a trace plot of the first 10 trees in the forest
+#' trace_plot(
+#'  rf = penguin.rf,
+#'  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+#'  tree_ids = 1:10
+#' )
 
 trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5) {
 

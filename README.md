@@ -1,7 +1,5 @@
 
-# TreeTracer
-
-🌳 🌲 🎋 🎋 🎋 🎄 🌳 🌳 🌴 🎋 🎋 🌲 🎄 🎄
+# TreeTracer 🌴 🖊
 
 The beginnings…
 
@@ -18,34 +16,58 @@ library(TreeTracer)
 ```
 
 ``` r
-# Fit a random forest using the iris data
-set.seed(71)
-iris.rf <- randomForest::randomForest(Species ~ ., data = iris)
+# Load other packages
+library(dplyr)
+library(ggpcp)
+library(ggplot2)
 ```
 
 ``` r
-# Generate a trace plot of the first 25 trees in the forest
+# Load the Palmer penguins data
+penguins <- na.omit(palmerpenguins::penguins)
+```
+
+``` r
+# Create a parallel coordinate plot of features that will be used to fit
+# a random forest colored by the variable of interest to predict (species)
+penguins %>%
+  ggplot(aes(color = species)) +
+  geom_pcp(aes(
+    vars = vars(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
+  ), alpha = 0.5) + 
+  scale_color_brewer(palette = "Paired")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+# Fit a random forest
+set.seed(71)
+penguin.rf <- randomForest::randomForest(species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g, data = penguins)
+```
+
+``` r
+# Generate a trace plot of the first 10 trees in the forest
 trace_plot(
-  rf = iris.rf,
-  train = iris[, -5],
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
   tree_ids = 1:10
 )
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
-# Adjust the width of horizontal feature lines and alpha of traces
+# Plot all trees in the forest and adjust alpha
 trace_plot(
-  rf = iris.rf,
-  train = iris[, -5],
-  tree_ids = 1:10,
-  width = 0.5,
-  alpha = 0.25
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = 1:penguin.rf$ntree,
+  alpha = 0.05
 )
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ## References
 
