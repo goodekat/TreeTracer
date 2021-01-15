@@ -19,19 +19,28 @@ Convert tree information from a random forest to the structure for a trace plot
 }
 \examples{
 
-# Load dplyr
+# Load packages
 library(dplyr)
+library(palmerpenguins)
 
 # Load the Palmer penguins data
-penguins <- na.omit(palmerpenguins::penguins)
+penguins <- na.omit(penguins)
 
 # Fit a random forest
 set.seed(71)
-penguin.rf <- randomForest::randomForest(species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g, data = penguins)
+penguin.rf <-
+  randomForest::randomForest(
+    species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
+    data = penguins
+  )
 
 # Extract tree data from the first tree in the random forest
 tree_data <- get_tree_data(penguin.rf, 1)
 
 # Obtain the trace data for the first tree in the random forest
-get_trace_data(tree_data, penguins \%>\% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g))
+get_trace_data(
+  tree_data = tree_data,
+  train = penguins \%>\%
+    select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
+  )
 }

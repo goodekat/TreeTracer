@@ -27,15 +27,20 @@
 #'
 #' @examples
 #'
-#' # Load dplyr
+#' # Load packages
 #' library(dplyr)
+#' library(palmerpenguins)
 #'
 #' # Load the Palmer penguins data
-#' penguins <- na.omit(palmerpenguins::penguins)
+#' penguins <- na.omit(penguins)
 #'
 #' # Fit a random forest
 #' set.seed(71)
-#' penguin.rf <- randomForest::randomForest(species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g, data = penguins)
+#' penguin.rf <-
+#'   randomForest::randomForest(
+#'     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
+#'     data = penguins
+#'   )
 #'
 #' # Generate a trace plot of the first 10 trees in the forest
 #' trace_plot(

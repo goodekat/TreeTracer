@@ -13,6 +13,7 @@ Imports:
   dplyr,
   ggplot2,
   janitor,
+  palmerpenguins,
   randomForest,
   rlang,
   purrr,
