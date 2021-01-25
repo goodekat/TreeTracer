@@ -18,5 +18,8 @@ Imports:
   rlang,
   purrr,
   Rdpack,
-  tidyr
+  stats,
+  textshape,
+  tidyr,
+  utils
 RdMacros: Rdpack

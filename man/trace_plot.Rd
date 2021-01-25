@@ -4,7 +4,7 @@
 \alias{trace_plot}
 \title{Create a trace plot of trees from a random forest}
 \usage{
-trace_plot(rf, train, tree_ids, width = 0.8, alpha = 0.5)
+trace_plot(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_id = FALSE)
 }
 \arguments{
 \item{rf}{random forest model fit using randomForest}
@@ -18,6 +18,8 @@ trace_plot(rf, train, tree_ids, width = 0.8, alpha = 0.5)
 
 \item{alpha}{alpha value for the lines in the trace plot (a number between 0
 and 1; default is 0.5)}
+
+\item{color_by_id}{should the trace lines be colored by the tree IDs? (default if FALSE)}
 }
 \description{
 Trace plots are useful tools for visually comparing trees from a random

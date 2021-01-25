@@ -1,5 +1,5 @@
 
-# TreeTracer 🌴 🖊
+# TreeTracer 🎄 🖊
 
 The beginnings…
 
@@ -43,7 +43,12 @@ penguins %>%
 ``` r
 # Fit a random forest
 set.seed(71)
-penguin.rf <- randomForest::randomForest(species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g, data = penguins)
+penguin.rf <-
+  randomForest::randomForest(
+    species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
+    data = penguins, 
+    ntree = 50
+  )
 ```
 
 ``` r
@@ -68,6 +73,48 @@ trace_plot(
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+``` r
+# Compute fit metrics between all trees
+fit_metrics = compute_fit_metric(penguin.rf, penguins)
+head(fit_metrics)
+```
+
+    ##   t1 t2 similarity
+    ## 1  1  2   0.984985
+    ## 2  1  3   0.981982
+    ## 3  1  4   0.972973
+    ## 4  1  5   0.981982
+    ## 5  1  6   0.969970
+    ## 6  1  7   0.981982
+
+``` r
+dist_matrix <- get_dist_matrix(fit_metrics)
+
+stree <- hclust(dist_matrix, method = "single")
+ctree <- hclust(dist_matrix, method = "complete")
+atree <- hclust(dist_matrix, method = "average")
+
+par(mfcol=c(1,3))
+plot(stree, ylab = "Distance", main = "Single linkage")
+plot(ctree, ylab = "Distance", main = "Complete linkage")
+plot(atree, ylab = "Distance", main = "Average linkage")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+# Plot all trees in the forest and adjust alpha
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = c(12, 32, 35), 
+  color_by_id = TRUE
+) + 
+  scale_color_manual(values = c("purple", "orange", "darkorange"))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ## References
 

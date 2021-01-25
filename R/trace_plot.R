@@ -24,6 +24,7 @@
 #'              (a number between 0 and 1; default is 0.8)
 #' @param alpha alpha value for the lines in the trace plot (a number between 0
 #'              and 1; default is 0.5)
+#' @param color_by_id should the trace lines be colored by the tree IDs? (default if FALSE)
 #'
 #' @examples
 #'
@@ -49,7 +50,7 @@
 #'  tree_ids = 1:10
 #' )
 
-trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5) {
+trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_id = FALSE) {
 
   # trace_data: output from get_trace_data function
   # alpha: alpha to use for the lines in the plot
@@ -84,7 +85,8 @@ trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5) {
     distinct()
 
   # Create a trace plot
-  trace_data %>%
+  trace_plot <-
+    trace_data %>%
     ggplot() +
     geom_segment(
       mapping = aes(
@@ -94,15 +96,36 @@ trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5) {
         yend = .data$tree_level,
         group = .data$tree_level:factor(.data$split_var)
       )
-    ) +
-    geom_line(
-      mapping = aes(
-        x = .data$split_scaled,
-        y = .data$tree_level,
-        group = factor(.data$tree):factor(.data$tree_branch)
-      ),
-      alpha = alpha
-    ) +
+    )
+
+  # Add color to the plot
+  if (color_by_id == TRUE) {
+    trace_plot <-
+      trace_plot +
+      geom_line(
+        mapping = aes(
+          x = .data$split_scaled,
+          y = .data$tree_level,
+          group = factor(.data$tree):factor(.data$tree_branch),
+          color = factor(.data$tree)
+        ),
+        alpha = alpha
+      )
+  } else {
+    trace_plot <-
+      trace_plot +
+      geom_line(
+        mapping = aes(
+          x = .data$split_scaled,
+          y = .data$tree_level,
+          group = factor(.data$tree):factor(.data$tree_branch)
+        ),
+        alpha = alpha
+      )
+  }
+
+  # Finish traceplot
+  trace_plot +
     geom_point(mapping = aes(x = .data$split_scaled, y = .data$tree_level),
                shape = 3) +
     geom_text(
