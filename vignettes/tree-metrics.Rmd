@@ -1,6 +1,24 @@
 ---
 title: "Tree Distance Metrics"
 author: "TreeTracer version `r packageVersion('TreeTracer')`"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tree Distance Metrics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+---
+title: "Tree Distance Metrics"
+author: "TreeTracer version `r packageVersion('TreeTracer')`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Tree Distance Metrics}
