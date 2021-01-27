@@ -8,11 +8,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# Chipman, George, and McCulloch (1998)
+## Chipman, George, and McCulloch (1998)
 
 Let $T_1$ and $T_2$ be two trees trained using $(y_i,\textbf{x}_i)$ for $i=1,...,n$.
 
-## Fit Metric
+### Fit Metric
 
 The **fit metric** is defined as
 
@@ -30,7 +30,7 @@ where:
   
   $$m\left(y_1,y_2\right)=\begin{cases} 1 & \mbox{if} \ \ y_1=y_2 \\ 0 & \mbox{o.w.} \end{cases}$$
   
-## Partition Metric
+### Partition Metric
 
 The **partition metric** is defined as
 
@@ -40,3 +40,8 @@ where:
 
 $$I_1(i,k)=\begin{cases} 1 & \mbox{if } T_1 \mbox{ places observations } i \mbox{ an } k \mbox{ in the same node} \\ 0 & \mbox{o.w.} \end{cases}$$
 Note: The metric is scaled to the range of (0,1) by $n\choose2$.
+
+### Tree Metric 
+
+From Shannon and Banks (1998)...
+
