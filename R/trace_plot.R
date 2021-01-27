@@ -25,6 +25,8 @@
 #' @param alpha alpha value for the lines in the trace plot (a number between 0
 #'              and 1; default is 0.5)
 #' @param color_by_id should the trace lines be colored by the tree IDs? (default if FALSE)
+#' @param rep_tree option to add a "representative tree" on top of the trace plot by providing
+#'                 a data frame with the structure of the get_tree_data function (NULL by default)
 #'
 #' @examples
 #'
@@ -50,7 +52,7 @@
 #'  tree_ids = 1:10
 #' )
 
-trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_id = FALSE) {
+trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_id = FALSE, rep_tree = NULL) {
 
   # trace_data: output from get_trace_data function
   # alpha: alpha to use for the lines in the plot
@@ -64,10 +66,19 @@ trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_i
     ) %>%
     get_trace_data(train = train, width = width)
 
+  # Obtain trace data from representative tree (if given)
+  if (!is.null(rep_tree)) rep_trace_data <- get_trace_data(rep_tree, train, width)
+
   # Extract the levels that correspond to a tree
-  trees = sort(unique(trace_data$tree))
-  tree_branches = sort(unique(trace_data$tree_branch))
-  tree_levels = sort(unique(trace_data$tree_level), decreasing = TRUE)
+  if (is.null(rep_tree)){
+    trees = sort(unique(trace_data$tree))
+    tree_branches = sort(unique(trace_data$tree_branch))
+    tree_levels = sort(unique(trace_data$tree_level), decreasing = TRUE)
+  } else {
+    trees = sort(unique(trace_data$tree))
+    tree_branches = sort(unique(c(trace_data$tree_branch, rep_trace_data$tree_branch)))
+    tree_levels = sort(unique(c(trace_data$tree_level, rep_trace_data$tree_branch)), decreasing = TRUE)
+  }
 
   # Convert categorical variables to factors
   trace_data <-
@@ -78,11 +89,30 @@ trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_i
       tree_level = factor(.data$tree_level, levels = tree_levels)
     )
 
+  # Obtain trace data from representative tree (if given)
+  if (!is.null(rep_tree)) {
+    rep_trace_data <-
+      rep_trace_data %>%
+      mutate(
+        tree = factor(.data$tree, levels = trees),
+        tree_branch = factor(.data$tree_branch, levels = tree_branches),
+        tree_level = factor(.data$tree_level, levels = tree_levels)
+      )
+  }
+
   # Extract the split variables to use as labels in the trace plot
-  trace_labels <-
-    trace_data %>%
-    select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
-    distinct()
+  if (is.null(rep_tree)) {
+    trace_labels <-
+      trace_data %>%
+      select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
+      distinct()
+  } else {
+    trace_labels <-
+      trace_data %>%
+      bind_rows(rep_trace_data) %>%
+      select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
+      distinct()
+  }
 
   # Create a trace plot
   trace_plot <-
@@ -106,8 +136,8 @@ trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_i
         mapping = aes(
           x = .data$split_scaled,
           y = .data$tree_level,
-          group = factor(.data$tree):factor(.data$tree_branch),
-          color = factor(.data$tree)
+          group = .data$tree:.data$tree_branch,
+          color = .data$tree
         ),
         alpha = alpha
       ) +
@@ -125,15 +155,34 @@ trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_i
       )
   }
 
-  # Finish traceplot
-  trace_plot +
+  # Add splits and text to plot
+  trace_plot <-
+    trace_plot +
     geom_point(mapping = aes(x = .data$split_scaled, y = .data$tree_level),
                shape = 3) +
     geom_text(
       data = trace_labels,
       mapping = aes(x = .data$seg_xmid, y = .data$tree_level, label = .data$split_var),
       nudge_y = -0.1
-    ) +
+    )
+
+  # Add representative tree (if given)
+  if (!is.null(rep_tree)) {
+    trace_plot <-
+      trace_plot +
+      geom_line(
+        data = rep_trace_data,
+        aes(
+          x = .data$split_scaled,
+          y = .data$tree_level,
+          group = .data$tree_branch
+        ),
+        size = 3
+      )
+  }
+
+  # Format trace plot
+  trace_plot +
     theme(
       axis.text = element_blank(),
       axis.ticks = element_blank(),

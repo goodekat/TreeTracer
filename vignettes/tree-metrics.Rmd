@@ -43,5 +43,18 @@ Note: The metric is scaled to the range of (0,1) by $n\choose2$.
 
 ### Tree Metric 
 
-From Shannon and Banks (1998)...
+A metric from Shannon and Banks (1998): Define the **tree metric** as 
+
+$$d(T_1,T_2)=\sum_{r \ \in\ \mbox{nodes}(T_1,T_2)}\alpha_rm\left(\mbox{rule}(T_1,r),\mbox{rule}(T_2,r)\right)$$
+
+where
+
+- $r$ is the node position (can be a terminal node in at least one position)
+- $m$ is a measure that compares the rules at two nodes
+- $rule$ is the "rule" at a node in the tree such as the feature used for splitting at the node 
+- $\alpha_r$ is a weight chosen by the user
+
+Shannon and Banks (1998) let 
+
+$$m=\begin{cases} 1 & \mbox{if the variables at node } r \mbox{ are the same in both trees} \\ 0 & \mbox{o.w.} \end{cases}$$
 

@@ -1,5 +1,5 @@
 
-# TreeTracer 🌴 🖊
+# TreeTracer 🌳 🖊
 
 The beginnings…
 
@@ -158,6 +158,18 @@ trace_plot(
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+``` r
+# Plot tree 8 versus some others to see if any noticeable differences
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = c(27, 3, 10), 
+  rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep")
+)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ## References
 
