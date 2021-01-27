@@ -30,3 +30,13 @@ where:
   
   $$m\left(y_1,y_2\right)=\begin{cases} 1 & \mbox{if} \ \ y_1=y_2 \\ 0 & \mbox{o.w.} \end{cases}$$
   
+## Partition Metric
+
+The **partition metric** is defined as
+
+$$d\left(T_1, T_2\right)=\frac{\sum_{i>k}\left|I_1(i,k)-I_2(i,k)\right|}{n\choose2}$$
+
+where:
+
+$$I_1(i,k)=\begin{cases} 1 & \mbox{if } T_1 \mbox{ places observations } i \mbox{ an } k \mbox{ in the same node} \\ 0 & \mbox{o.w.} \end{cases}$$
+Note: The metric is scaled to the range of (0,1) by $n\choose2$.

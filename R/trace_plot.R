@@ -110,7 +110,8 @@ trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_i
           color = factor(.data$tree)
         ),
         alpha = alpha
-      )
+      ) +
+      labs(color = "Tree ID")
   } else {
     trace_plot <-
       trace_plot +

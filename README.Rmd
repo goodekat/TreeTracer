@@ -79,13 +79,20 @@ trace_plot(
 )
 ```
 
-```{r fig.width = 16, fig.height = 4}
+Fit metric compares the predictions of the individual trees:
+
+```{r}
 # Compute fit metrics between all trees
 fit_metrics = compute_fit_metric(penguin.rf, penguins)
 head(fit_metrics)
 
+# Get the distance matrix based on the fit metrics
 dist_matrix <- get_dist_matrix(fit_metrics)
+```
 
+Hierarchical clustering: 
+
+```{r fig.width = 16, fig.height = 4}
 stree <- hclust(dist_matrix, method = "single")
 ctree <- hclust(dist_matrix, method = "complete")
 atree <- hclust(dist_matrix, method = "average")
@@ -96,16 +103,49 @@ plot(ctree, ylab = "Distance", main = "Complete linkage")
 plot(atree, ylab = "Distance", main = "Average linkage")
 ```
 
+Classic MDS: 
+
 ```{r}
-# Plot all trees in the forest and adjust alpha
+mds_res <-
+  cmdscale(dist_matrix) %>% 
+  data.frame() %>%
+  rename("Coordinate 1" = "X1", "Coordinate 2" = "X2") %>%
+  tibble::rownames_to_column("Tree")
+
+ggplot(mds_res, aes(x = `Coordinate 1`, y = `Coordinate 2`)) + 
+  geom_text(aes(label = Tree))
+```
+
+```{r}
+# Plot tree 8 versus some others to see if any noticeable differences
 trace_plot(
   rf = penguin.rf,
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
-  tree_ids = c(12, 32, 35), 
+  tree_ids = c(12, 27, 3, 10), 
   color_by_id = TRUE
 ) + 
-  scale_color_manual(values = c("purple", "orange", "darkorange"))
+  scale_color_manual(values = c(rep("grey", 2), "blue", "grey"))
 ```
+
+```{r}
+# Plot tree 8 versus some others to see if any noticeable differences
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = 1:penguin.rf$ntree,
+  color_by_id = TRUE,
+  alpha = 0.25
+) +
+  scale_color_manual(values = c(
+    rep("black", 11),
+    "blue",
+    rep("black", 19),
+    "blue",
+    rep("black", 18)
+  )) +
+  theme(legend.position = "none")
+```
+
 
 ## References
 
