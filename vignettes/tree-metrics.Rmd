@@ -16,16 +16,6 @@ knitr::opts_chunk$set(
 )
 ```
 
----
-title: "Tree Distance Metrics"
-author: "TreeTracer version `r packageVersion('TreeTracer')`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Tree Distance Metrics}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
 ## Chipman, George, and McCulloch (1998)
 
 Let $T_1$ and $T_2$ be two trees trained using $(y_i,\textbf{x}_i)$ for $i=1,...,n$.
@@ -56,7 +46,7 @@ $$d\left(T_1, T_2\right)=\frac{\sum_{i>k}\left|I_1(i,k)-I_2(i,k)\right|}{n\choos
 
 where:
 
-$$I_1(i,k)=\begin{cases} 1 & \mbox{if } T_1 \mbox{ places observations } i \mbox{ an } k \mbox{ in the same node} \\ 0 & \mbox{o.w.} \end{cases}$$
+$$I_1(i,k)=\begin{cases} 1 & \mbox{if } T_1 \mbox{ places observations } i \mbox{ an } k \mbox{ in the same terminal node} \\ 0 & \mbox{o.w.} \end{cases}$$
 Note: The metric is scaled to the range of (0,1) by $n\choose2$.
 
 ### Tree Metric 
