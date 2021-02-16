@@ -8,7 +8,7 @@
 #'
 #' @export compute_covariate_metric
 #'
-#' @importFrom dplyr %>% filter
+#' @importFrom dplyr %>% filter mutate_all
 #' @importFrom purrr map_df
 #' @importFrom utils combn
 #'
@@ -28,7 +28,7 @@
 #'   randomForest::randomForest(
 #'     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
 #'     data = penguins,
-#'     ntree = 10
+#'     ntree = 5
 #'   )
 #'
 #' # Compute fit metrics between all trees
@@ -43,14 +43,14 @@ compute_covariate_metric <- function(rf) {
   all_trees_df = purrr::map_df(
     .x = 1:rf$ntree,
     .f = function(t) {
-      get_tree_data(rf = rf, k = t) %>% select(tree, split_var) %>% distinct()
+      get_tree_data(rf = rf, k = t) %>% select(.data$tree, .data$split_var) %>% distinct()
     })
 
   # Create a data frame of indicators for whether a variable is used in a tree or not
   var_indicators <-
     all_trees_df %>%
     mutate(ind = 1) %>%
-    pivot_wider(names_from = split_var, values_from = ind) %>%
+    pivot_wider(names_from = .data$split_var, values_from = .data$ind) %>%
     mutate_all(.funs = function(x) ifelse(is.na(x), 0, x))
 
   # Create a matrix with all pairs of trees

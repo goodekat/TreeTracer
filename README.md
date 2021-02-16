@@ -1,5 +1,5 @@
 
-# TreeTracer 🎄 🖊
+# TreeTracer 🌳 🖊
 
 The beginnings…
 
@@ -72,13 +72,13 @@ trace_plot(
   rf = penguin.rf,
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
   tree_ids = 1:penguin.rf$ntree,
-  alpha = 0.05
+  alpha = 0.4
 )
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-## Comparison of trees: fit metric
+## Comparison of trees: fit metric from Chipman, George, and McCulloch (1998)
 
 Fit metric compares the predictions of the individual trees:
 
@@ -137,12 +137,28 @@ trace_plot(
   rf = penguin.rf,
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
   tree_ids = c(12, 27, 3, 10), 
-  color_by_id = TRUE
+  color_by_id = TRUE,
+  alpha = 1
 ) + 
-  scale_color_manual(values = c(rep("grey", 2), "blue", "grey"))
+  scale_color_manual(values = c(rep("grey60", 2), "blue", "grey60"))
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+# Plot tree 8 versus some others to see if any noticeable differences
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = c(27, 3, 10), 
+  alpha = 1,
+  rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep"),
+  rep_tree_size = 1.5,
+  rep_tree_alpha = 0.57
+)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 # Plot tree 8 versus some others to see if any noticeable differences
@@ -163,21 +179,21 @@ trace_plot(
   theme(legend.position = "none")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
-# Plot tree 8 versus some others to see if any noticeable differences
 trace_plot(
   rf = penguin.rf,
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
-  tree_ids = c(27, 3, 10), 
-  rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep")
+  tree_ids = 1:penguin.rf$ntree, 
+  rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep"), 
+  rep_tree_size = 1.5
 )
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
-## Comparison of trees: covariate metric
+## Comparison of trees: covariate metric from Banerjee, Ding, and Noone (2012)
 
 Covariate metric compares similarities between covariates used
 
@@ -213,7 +229,7 @@ plot(ctree, ylab = "Distance", main = "Complete linkage")
 plot(atree, ylab = "Distance", main = "Average linkage")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 Classic MDS:
 
@@ -228,7 +244,7 @@ ggplot(mds_res, aes(x = `Coordinate 1`, y = `Coordinate 2`)) +
   geom_text(aes(label = Tree))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
 # Plot tree 8 versus some others to see if any noticeable differences
@@ -242,11 +258,42 @@ trace_plot(
   scale_color_manual(values = c(rep("green", 2), rep("blue", 3))) 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+``` r
+# Plot tree 8 versus some others to see if any noticeable differences
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = 1:penguin.rf$ntree,
+  rep_tree = get_tree_data(penguin.rf, 2) %>% mutate(tree = "rep"),
+  rep_tree_color = "cyan4",
+  rep_tree_size = 2
+) + theme_bw()
+```
+
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ## References
 
 <div id="refs" class="references">
+
+<div id="ref-banerjee:2012">
+
+Banerjee, Mousumi, Ying Ding, and Anne-Michelle Noone. 2012.
+“Identifying representative trees from ensembles.” *Statistics in
+Medicine* 31 (15): 1601–16. <https://doi.org/10.1002/sim.4492>.
+
+</div>
+
+<div id="ref-chipman:1998">
+
+Chipman, H. A., E. I. George, and R. E. McCulloch. 1998. “Making sense
+of a forest of trees.” In *Proceedings of the 30th Symposium on the
+Interface*, 84—92.
+<http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.42.2598>.
+
+</div>
 
 <div id="ref-urbanek:2008">
 

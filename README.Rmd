@@ -79,11 +79,11 @@ trace_plot(
   rf = penguin.rf,
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
   tree_ids = 1:penguin.rf$ntree,
-  alpha = 0.05
+  alpha = 0.4
 )
 ```
 
-## Comparison of trees: fit metric
+## Comparison of trees: fit metric from @chipman:1998
 
 Fit metric compares the predictions of the individual trees:
 
@@ -128,9 +128,23 @@ trace_plot(
   rf = penguin.rf,
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
   tree_ids = c(12, 27, 3, 10), 
-  color_by_id = TRUE
+  color_by_id = TRUE,
+  alpha = 1
 ) + 
-  scale_color_manual(values = c(rep("grey", 2), "blue", "grey"))
+  scale_color_manual(values = c(rep("grey60", 2), "blue", "grey60"))
+```
+
+```{r}
+# Plot tree 8 versus some others to see if any noticeable differences
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = c(27, 3, 10), 
+  alpha = 1,
+  rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep"),
+  rep_tree_size = 1.5,
+  rep_tree_alpha = 0.57
+)
 ```
 
 ```{r}
@@ -153,16 +167,16 @@ trace_plot(
 ```
 
 ```{r}
-# Plot tree 8 versus some others to see if any noticeable differences
 trace_plot(
   rf = penguin.rf,
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
-  tree_ids = c(27, 3, 10), 
-  rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep")
+  tree_ids = 1:penguin.rf$ntree, 
+  rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep"), 
+  rep_tree_size = 1.5
 )
 ```
 
-## Comparison of trees: covariate metric
+## Comparison of trees: covariate metric from @banerjee:2012
 
 Covariate metric compares similarities between covariates used
 
@@ -211,6 +225,18 @@ trace_plot(
   alpha = 0.9
 ) + 
   scale_color_manual(values = c(rep("green", 2), rep("blue", 3))) 
+```
+
+```{r}
+# Plot tree 8 versus some others to see if any noticeable differences
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = 1:penguin.rf$ntree,
+  rep_tree = get_tree_data(penguin.rf, 2) %>% mutate(tree = "rep"),
+  rep_tree_color = "cyan4",
+  rep_tree_size = 2
+) + theme_bw()
 ```
 
 ## References

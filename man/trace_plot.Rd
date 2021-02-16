@@ -11,7 +11,10 @@ trace_plot(
   width = 0.8,
   alpha = 0.5,
   color_by_id = FALSE,
-  rep_tree = NULL
+  rep_tree = NULL,
+  rep_tree_size = 1,
+  rep_tree_color = "blue",
+  rep_tree_alpha = 1
 )
 }
 \arguments{
@@ -31,6 +34,12 @@ and 1; default is 0.5)}
 
 \item{rep_tree}{option to add a "representative tree" on top of the trace plot by providing
 a data frame with the structure of the get_tree_data function (NULL by default)}
+
+\item{rep_tree_size}{line size of "representative tree" (1 by default)}
+
+\item{rep_tree_color}{line color of "representative tree" ("blue" by default)}
+
+\item{rep_tree_alpha}{line alpha of "representative tree" (1 by default)}
 }
 \description{
 Trace plots are useful tools for visually comparing trees from a random

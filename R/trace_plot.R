@@ -12,7 +12,7 @@
 #' @export trace_plot
 #'
 #' @importFrom dplyr %>% distinct select
-#' @importFrom ggplot2 aes element_blank ggplot geom_line geom_point geom_segment geom_text theme
+#' @importFrom ggplot2 aes element_blank ggplot geom_line geom_point geom_segment geom_text labs scale_x_continuous theme
 #' @importFrom purrr map_df
 #' @importFrom Rdpack reprompt
 #' @importFrom rlang .data
@@ -27,6 +27,9 @@
 #' @param color_by_id should the trace lines be colored by the tree IDs? (default if FALSE)
 #' @param rep_tree option to add a "representative tree" on top of the trace plot by providing
 #'                 a data frame with the structure of the get_tree_data function (NULL by default)
+#' @param rep_tree_size line size of "representative tree" (1 by default)
+#' @param rep_tree_color line color of "representative tree" ("blue" by default)
+#' @param rep_tree_alpha line alpha of "representative tree" (1 by default)
 #'
 #' @examples
 #'
@@ -52,33 +55,46 @@
 #'  tree_ids = 1:10
 #' )
 
-trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_id = FALSE, rep_tree = NULL) {
+trace_plot <- function(rf,
+                       train,
+                       tree_ids,
+                       width = 0.8,
+                       alpha = 0.5,
+                       color_by_id = FALSE,
+                       rep_tree = NULL,
+                       rep_tree_size = 1,
+                       rep_tree_color = "blue",
+                       rep_tree_alpha = 1) {
+
 
   # trace_data: output from get_trace_data function
   # alpha: alpha to use for the lines in the plot
 
   # Obtain the trace data from the specified trees
-  trace_data <-
-    purrr::map_df(
-      .x = tree_ids,
-      .f = function(id)
-        get_tree_data(rf = rf , k = id)
-    ) %>%
-    get_trace_data(train = train, width = width)
-
-  # Obtain trace data from representative tree (if given)
-  if (!is.null(rep_tree)) rep_trace_data <- get_trace_data(rep_tree, train, width)
+  if (is.null(rep_tree)) {
+    trace_data <-
+      purrr::map_df(
+        .x = tree_ids,
+        .f = function(id)
+          get_tree_data(rf = rf , k = id)
+      ) %>%
+      get_trace_data(train = train, width = width)
+  } else {
+    trace_data <-
+      purrr::map_df(
+        .x = tree_ids,
+        .f = function(id)
+          get_tree_data(rf = rf , k = id)
+      ) %>%
+      mutate(tree = as.character(.data$tree)) %>%
+      bind_rows(rep_tree %>% mutate(tree = as.character("rep"))) %>%
+      get_trace_data(train = train, width = width)
+  }
 
   # Extract the levels that correspond to a tree
-  if (is.null(rep_tree)){
-    trees = sort(unique(trace_data$tree))
-    tree_branches = sort(unique(trace_data$tree_branch))
-    tree_levels = sort(unique(trace_data$tree_level), decreasing = TRUE)
-  } else {
-    trees = sort(unique(trace_data$tree))
-    tree_branches = sort(unique(c(trace_data$tree_branch, rep_trace_data$tree_branch)))
-    tree_levels = sort(unique(c(trace_data$tree_level, rep_trace_data$tree_branch)), decreasing = TRUE)
-  }
+  trees = sort(unique(trace_data$tree))
+  tree_branches = sort(unique(trace_data$tree_branch))
+  tree_levels = sort(unique(trace_data$tree_level), decreasing = TRUE)
 
   # Convert categorical variables to factors
   trace_data <-
@@ -89,50 +105,34 @@ trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_i
       tree_level = factor(.data$tree_level, levels = tree_levels)
     )
 
-  # Obtain trace data from representative tree (if given)
-  if (!is.null(rep_tree)) {
-    rep_trace_data <-
-      rep_trace_data %>%
-      mutate(
-        tree = factor(.data$tree, levels = trees),
-        tree_branch = factor(.data$tree_branch, levels = tree_branches),
-        tree_level = factor(.data$tree_level, levels = tree_levels)
-      )
-  }
-
   # Extract the split variables to use as labels in the trace plot
-  if (is.null(rep_tree)) {
-    trace_labels <-
-      trace_data %>%
-      select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
-      distinct()
-  } else {
-    trace_labels <-
-      trace_data %>%
-      bind_rows(rep_trace_data) %>%
-      select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
-      distinct()
-  }
+  trace_labels <-
+    trace_data %>%
+    select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
+    distinct()
+
+  # Determine the split vars
+  split_vars = unique(trace_data$split_var)
 
   # Create a trace plot
   trace_plot <-
-    trace_data %>%
-    ggplot() +
+    ggplot(trace_data) +
     geom_segment(
       mapping = aes(
         x = .data$seg_xmin,
         xend = .data$seg_xmax,
         y = .data$tree_level,
-        yend = .data$tree_level,
-        group = .data$tree_level:factor(.data$split_var)
+        yend = .data$tree_level
       )
-    )
+    ) +
+    scale_x_continuous(breaks = 1:length(split_vars), labels = split_vars)
 
   # Add color to the plot
   if (color_by_id == TRUE) {
     trace_plot <-
       trace_plot +
       geom_line(
+        data = trace_data %>% filter(.data$tree != "rep"),
         mapping = aes(
           x = .data$split_scaled,
           y = .data$tree_level,
@@ -141,51 +141,75 @@ trace_plot <- function(rf, train, tree_ids, width = 0.8, alpha = 0.5, color_by_i
         ),
         alpha = alpha
       ) +
+      geom_point(
+        data = trace_data %>% filter(.data$tree != "rep"),
+        mapping = aes(
+          x = .data$split_scaled,
+          y = .data$tree_level,
+          color = .data$tree
+        ),
+        shape = 124
+      ) +
       labs(color = "Tree ID")
   } else {
     trace_plot <-
       trace_plot +
       geom_line(
+        data = trace_data %>% filter(.data$tree != "rep"),
         mapping = aes(
           x = .data$split_scaled,
           y = .data$tree_level,
           group = factor(.data$tree):factor(.data$tree_branch)
         ),
         alpha = alpha
-      )
+      ) +
+      geom_point(
+        data = trace_data %>% filter(.data$tree != "rep"),
+        mapping = aes(x = .data$split_scaled, y = .data$tree_level), shape = 124)
   }
 
-  # Add splits and text to plot
-  trace_plot <-
-    trace_plot +
-    geom_point(mapping = aes(x = .data$split_scaled, y = .data$tree_level),
-               shape = 3) +
-    geom_text(
-      data = trace_labels,
-      mapping = aes(x = .data$seg_xmid, y = .data$tree_level, label = .data$split_var),
-      nudge_y = -0.1
-    )
+  # # Add text to plot
+  # trace_plot <-
+  #   trace_plot +
+  #   geom_text(
+  #     data = trace_labels,
+  #     mapping = aes(x = .data$seg_xmid, y = .data$tree_level, label = .data$split_var),
+  #     nudge_y = -0.1
+  #   )
 
   # Add representative tree (if given)
   if (!is.null(rep_tree)) {
     trace_plot <-
       trace_plot +
       geom_line(
-        data = rep_trace_data,
+        data = trace_data %>% filter(.data$tree == "rep"),
         aes(
           x = .data$split_scaled,
           y = .data$tree_level,
           group = .data$tree_branch
         ),
-        size = 3
+        size = rep_tree_size,
+        color = rep_tree_color,
+        alpha = rep_tree_alpha
+      ) +
+      geom_point(
+        data = trace_data %>% filter(.data$tree == "rep"),
+        mapping = aes(
+          x = .data$split_scaled,
+          y = .data$tree_level,
+          color = .data$tree
+        ),
+        size = rep_tree_size * 2,
+        color = rep_tree_color,
+        shape = 124
       )
   }
 
   # Format trace plot
   trace_plot +
     theme(
-      axis.text = element_blank(),
-      axis.ticks = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
       axis.title = element_blank()
     )
 

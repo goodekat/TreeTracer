@@ -26,7 +26,7 @@ penguin.rf <-
   randomForest::randomForest(
     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
     data = penguins,
-    ntree = 10
+    ntree = 5
   )
 
 # Compute fit metrics between all trees
