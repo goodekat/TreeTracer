@@ -3,7 +3,7 @@
 %   R/compute_partition_metric.R
 \name{compute_fit_metric}
 \alias{compute_fit_metric}
-\title{Compute fit metric between two trees}
+\title{Computes fit metric between two trees}
 \usage{
 compute_fit_metric(rf, data)
 
@@ -16,8 +16,7 @@ compute_fit_metric(rf, data)
 not need to be the training data)}
 }
 \description{
-The function computes the fit metric from \insertCite{chipman:1998;textual}{TreeTracer}
-between two trees (classification or regression).
+Function for computing the fit metric from \insertCite{chipman:1998;textual}{TreeTracer}.
 
 The function computes the fit metric from \insertCite{chipman:1998;textual}{TreeTracer}
 between two trees (classification or regression).

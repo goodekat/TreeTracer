@@ -1,7 +1,6 @@
-#' Compute fit metric between two trees
+#' Computes fit metric between two trees
 #'
-#' The function computes the fit metric from \insertCite{chipman:1998;textual}{TreeTracer}
-#' between two trees (classification or regression).
+#' Function for computing the fit metric from \insertCite{chipman:1998;textual}{TreeTracer}.
 #'
 #' @references{
 #'   \insertRef{chipman:1998}{TreeTracer}
@@ -59,7 +58,6 @@ compute_fit_metric <- function(rf, data) {
 
 }
 
-#
 fit_metric_class <- function(all_pred, t1, t2) {
   mean(all_pred$individual[, t1] == all_pred$individual[, t2])
 }
@@ -67,6 +65,3 @@ fit_metric_class <- function(all_pred, t1, t2) {
 fit_metric_reg <- function(all_pred, t1, t2) {
   mean((all_pred$individual[, t1] - all_pred$individual[, t2])^2)
 }
-
-
-

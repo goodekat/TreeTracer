@@ -1,5 +1,5 @@
 
-# TreeTracer 🌴 🖊
+# TreeTracer 🎄 🖊
 
 The beginnings…
 
@@ -21,6 +21,8 @@ library(dplyr)
 library(ggpcp)
 library(ggplot2)
 ```
+
+## Random forest model
 
 ``` r
 # Load the Palmer penguins data
@@ -51,6 +53,8 @@ penguin.rf <-
   )
 ```
 
+## Trace plots of trees
+
 ``` r
 # Generate a trace plot of the first 10 trees in the forest
 trace_plot(
@@ -74,6 +78,8 @@ trace_plot(
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
+## Comparison of trees: fit metric
+
 Fit metric compares the predictions of the individual trees:
 
 ``` r
@@ -91,16 +97,16 @@ head(fit_metrics)
     ## 6  1  7   0.981982
 
 ``` r
-# Get the distance matrix based on the fit metrics
-dist_matrix <- get_dist_matrix(fit_metrics)
+# Get the distance matrix
+dist_matrix_fit <- get_dist_matrix(fit_metrics)
 ```
 
 Hierarchical clustering:
 
 ``` r
-stree <- hclust(dist_matrix, method = "single")
-ctree <- hclust(dist_matrix, method = "complete")
-atree <- hclust(dist_matrix, method = "average")
+stree <- hclust(dist_matrix_fit, method = "single")
+ctree <- hclust(dist_matrix_fit, method = "complete")
+atree <- hclust(dist_matrix_fit, method = "average")
 
 par(mfcol=c(1,3))
 plot(stree, ylab = "Distance", main = "Single linkage")
@@ -114,7 +120,7 @@ Classic MDS:
 
 ``` r
 mds_res <-
-  cmdscale(dist_matrix) %>% 
+  cmdscale(dist_matrix_fit) %>% 
   data.frame() %>%
   rename("Coordinate 1" = "X1", "Coordinate 2" = "X2") %>%
   tibble::rownames_to_column("Tree")
@@ -170,6 +176,73 @@ trace_plot(
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+## Comparison of trees: covariate metric
+
+Covariate metric compares similarities between covariates used
+
+``` r
+# Compute fit metrics between all trees
+cov_metrics = compute_covariate_metric(penguin.rf)
+head(cov_metrics)
+```
+
+    ##   t1 t2 similarity
+    ## 1  1  2          1
+    ## 2  1  3          1
+    ## 3  1  4          1
+    ## 4  1  5          1
+    ## 5  1  6          1
+    ## 6  1  7          1
+
+``` r
+# Get the distance matrix
+dist_matrix_cov <- get_dist_matrix(cov_metrics)
+```
+
+Hierarchical clustering:
+
+``` r
+stree <- hclust(dist_matrix_cov, method = "single")
+ctree <- hclust(dist_matrix_cov, method = "complete")
+atree <- hclust(dist_matrix_cov, method = "average")
+
+par(mfcol=c(1,3))
+plot(stree, ylab = "Distance", main = "Single linkage")
+plot(ctree, ylab = "Distance", main = "Complete linkage")
+plot(atree, ylab = "Distance", main = "Average linkage")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+Classic MDS:
+
+``` r
+mds_res <-
+  cmdscale(dist_matrix_cov) %>% 
+  data.frame() %>%
+  rename("Coordinate 1" = "X1", "Coordinate 2" = "X2") %>%
+  tibble::rownames_to_column("Tree")
+
+ggplot(mds_res, aes(x = `Coordinate 1`, y = `Coordinate 2`)) + 
+  geom_text(aes(label = Tree))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+``` r
+# Plot tree 8 versus some others to see if any noticeable differences
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = c(11, 22, 42, 26, 33), 
+  color_by_id = TRUE, 
+  alpha = 0.9
+) + 
+  scale_color_manual(values = c(rep("green", 2), rep("blue", 3))) 
+```
+
+![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ## References
 
