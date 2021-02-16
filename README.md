@@ -1,5 +1,5 @@
 
-# TreeTracer 🌳 🖊
+# TreeTracer 🎄 🖊
 
 The beginnings…
 
@@ -61,7 +61,8 @@ trace_plot(
   rf = penguin.rf,
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
   tree_ids = 1:10
-)
+) + 
+  theme(aspect.ratio = 1, axis.title = element_blank())
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
@@ -73,7 +74,8 @@ trace_plot(
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
   tree_ids = 1:penguin.rf$ntree,
   alpha = 0.4
-)
+) + 
+  theme(aspect.ratio = 1, axis.title = element_blank())
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
@@ -140,7 +142,8 @@ trace_plot(
   color_by_id = TRUE,
   alpha = 1
 ) + 
-  scale_color_manual(values = c(rep("grey60", 2), "blue", "grey60"))
+  scale_color_manual(values = c(rep("grey60", 2), "blue", "grey60")) + 
+  theme(aspect.ratio = 1, axis.title = element_blank())
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
@@ -155,7 +158,8 @@ trace_plot(
   rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep"),
   rep_tree_size = 1.5,
   rep_tree_alpha = 0.57
-)
+) + 
+  theme(aspect.ratio = 1, axis.title = element_blank())
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
@@ -176,7 +180,8 @@ trace_plot(
     "blue",
     rep("black", 18)
   )) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") + 
+  theme(aspect.ratio = 1, axis.title = element_blank())
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
@@ -188,7 +193,8 @@ trace_plot(
   tree_ids = 1:penguin.rf$ntree, 
   rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep"), 
   rep_tree_size = 1.5
-)
+) + 
+  theme(aspect.ratio = 1, axis.title = element_blank())
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
@@ -268,8 +274,12 @@ trace_plot(
   tree_ids = 1:penguin.rf$ntree,
   rep_tree = get_tree_data(penguin.rf, 2) %>% mutate(tree = "rep"),
   rep_tree_color = "cyan4",
-  rep_tree_size = 2
-) + theme_bw()
+  rep_tree_size = 1.5,
+  rep_tree_alpha = 0.75
+) + 
+  theme_bw() + 
+  theme(aspect.ratio = 1, 
+        axis.title = element_blank())
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
