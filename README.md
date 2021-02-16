@@ -1,5 +1,5 @@
 
-# TreeTracer 🎄 🖊
+# TreeTracer 🌴 🖊
 
 The beginnings…
 
@@ -261,7 +261,8 @@ trace_plot(
   color_by_id = TRUE, 
   alpha = 0.9
 ) + 
-  scale_color_manual(values = c(rep("green", 2), rep("blue", 3))) 
+  scale_color_manual(values = c(rep("cyan4", 2), rep("blue", 3))) + 
+  theme_bw()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
