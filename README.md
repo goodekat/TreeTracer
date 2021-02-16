@@ -15,6 +15,10 @@ Examples:
 library(TreeTracer)
 ```
 
+    ## Registered S3 method overwritten by 'GGally':
+    ##   method from   
+    ##   +.gg   ggplot2
+
 ``` r
 # Load other packages
 library(dplyr)
@@ -142,7 +146,7 @@ trace_plot(
   color_by_id = TRUE,
   alpha = 1
 ) + 
-  scale_color_manual(values = c(rep("grey60", 2), "blue", "grey60")) + 
+  scale_color_manual(values = c(rep("grey60", 2), "cyan4", "grey60")) + 
   theme(aspect.ratio = 1, axis.title = element_blank())
 ```
 
@@ -174,11 +178,11 @@ trace_plot(
   alpha = 0.25
 ) +
   scale_color_manual(values = c(
-    rep("black", 11),
-    "blue",
-    rep("black", 19),
-    "blue",
-    rep("black", 18)
+    rep("grey20", 11),
+    "orange",
+    rep("grey20", 19),
+    "orange",
+    rep("grey20", 18)
   )) +
   theme(legend.position = "none") + 
   theme(aspect.ratio = 1, axis.title = element_blank())
@@ -192,7 +196,8 @@ trace_plot(
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
   tree_ids = 1:penguin.rf$ntree, 
   rep_tree = get_tree_data(penguin.rf, 12) %>% mutate(tree = "rep"), 
-  rep_tree_size = 1.5
+  rep_tree_size = 1.5,
+  rep_tree_alpha = 0.5
 ) + 
   theme(aspect.ratio = 1, axis.title = element_blank())
 ```
@@ -256,16 +261,32 @@ ggplot(mds_res, aes(x = `Coordinate 1`, y = `Coordinate 2`)) +
 # Plot tree 8 versus some others to see if any noticeable differences
 trace_plot(
   rf = penguin.rf,
-  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
-  tree_ids = c(11, 22, 42, 26, 33), 
-  color_by_id = TRUE, 
+  train = penguins %>% 
+    select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = c(11, 22, 42, 26, 33),
+  color_by_id = TRUE,
   alpha = 0.9
-) + 
-  scale_color_manual(values = c(rep("cyan4", 2), rep("blue", 3))) + 
-  theme_bw()
+) +
+  scale_color_manual(values = c(rep("cyan4", 2), rep("darkblue", 3))) + 
+  theme_bw() + 
+  theme(aspect.ratio = 1)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+Could be made more useful…shows where the two trees disagree with
+predictions
+
+``` r
+plot_tree_preds(
+  rf = penguin.rf,
+  data = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  t1 = 11,
+  t2 = 26
+)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 # Plot tree 8 versus some others to see if any noticeable differences
@@ -279,11 +300,10 @@ trace_plot(
   rep_tree_alpha = 0.75
 ) + 
   theme_bw() + 
-  theme(aspect.ratio = 1, 
-        axis.title = element_blank())
+  theme(aspect.ratio = 1)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ## References
 

@@ -95,6 +95,7 @@ trace_plot <- function(rf,
   trees = sort(unique(trace_data$tree))
   tree_branches = sort(unique(trace_data$tree_branch))
   tree_levels = sort(unique(trace_data$tree_level), decreasing = TRUE)
+  split_vars = unique(trace_data$split_var)
 
   # Convert categorical variables to factors
   trace_data <-
@@ -102,7 +103,8 @@ trace_plot <- function(rf,
     mutate(
       tree = factor(.data$tree, levels = trees),
       tree_branch = factor(.data$tree_branch, levels = tree_branches),
-      tree_level = factor(.data$tree_level, levels = tree_levels)
+      tree_level = factor(.data$tree_level, levels = tree_levels),
+      split_vars = factor(.data$split_var, levels = split_vars)
     )
 
   # Extract the split variables to use as labels in the trace plot
@@ -110,9 +112,6 @@ trace_plot <- function(rf,
     trace_data %>%
     select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
     distinct()
-
-  # Determine the split vars
-  split_vars = unique(trace_data$split_var)
 
   # Create a trace plot
   trace_plot <-
@@ -207,10 +206,6 @@ trace_plot <- function(rf,
 
   # Format trace plot
   trace_plot +
-    theme(
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.title = element_blank()
-    )
+    labs(x = "Split variable", y = "Tree level")
 
 }
