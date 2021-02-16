@@ -26,6 +26,7 @@
 #'              and 1; default is 0.5)
 #' @param color_by_id should the trace lines be colored by the tree IDs? (default if FALSE)
 #' @param facet_by_id should the traces be faceted by tree IDs? (default if FALSE)
+#' @param nrow number of rows if facet_by_id is TRUE (othewise ignored)
 #' @param max_depth the deepest level to include in the trace plot (set to NULl by default)
 #' @param rep_tree option to add a "representative tree" on top of the trace plot by providing
 #'                 a data frame with the structure of the get_tree_data function (NULL by default)
@@ -64,6 +65,7 @@ trace_plot <- function(rf,
                        alpha = 0.5,
                        color_by_id = FALSE,
                        facet_by_id = FALSE,
+                       nrow = NULL,
                        max_depth = NULL,
                        rep_tree = NULL,
                        rep_tree_size = 1,
@@ -215,7 +217,7 @@ trace_plot <- function(rf,
 
   # Facet by tree ID if requested
   if (facet_by_id == TRUE) {
-    trace_plot <- trace_plot + facet_wrap(. ~ .data$tree)
+    trace_plot <- trace_plot + facet_wrap(. ~ .data$tree, nrow = nrow)
   }
 
   # Format trace plot

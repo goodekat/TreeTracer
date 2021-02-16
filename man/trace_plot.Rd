@@ -12,6 +12,7 @@ trace_plot(
   alpha = 0.5,
   color_by_id = FALSE,
   facet_by_id = FALSE,
+  nrow = NULL,
   max_depth = NULL,
   rep_tree = NULL,
   rep_tree_size = 1,
@@ -35,6 +36,8 @@ and 1; default is 0.5)}
 \item{color_by_id}{should the trace lines be colored by the tree IDs? (default if FALSE)}
 
 \item{facet_by_id}{should the traces be faceted by tree IDs? (default if FALSE)}
+
+\item{nrow}{number of rows if facet_by_id is TRUE (othewise ignored)}
 
 \item{max_depth}{the deepest level to include in the trace plot (set to NULl by default)}
 

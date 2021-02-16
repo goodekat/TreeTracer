@@ -268,7 +268,8 @@ trace_plot(
   train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
   tree_ids = 1:3,
   color_by_id = T, 
-  facet_by_id = T
+  facet_by_id = T, 
+  nrow = 1
 ) + 
   theme_bw() + 
   theme(aspect.ratio = 1)
