@@ -123,15 +123,15 @@ ggplot(mds_res, aes(x = `Coordinate 1`, y = `Coordinate 2`)) +
 ```
 
 ```{r}
-# Plot tree 8 versus some others to see if any noticeable differences
 trace_plot(
   rf = penguin.rf,
-  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
-  tree_ids = c(12, 27, 3, 10), 
+  train = penguins %>% 
+    select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = c(12, 27, 3, 10),
   color_by_id = TRUE,
   alpha = 1
-) + 
-  scale_color_manual(values = c(rep("grey60", 2), "cyan4", "grey60")) + 
+) +
+  scale_color_manual(values = c(rep("grey60", 2), "cyan4", "grey60")) +
   theme(aspect.ratio = 1, axis.title = element_blank())
 ```
 
@@ -260,5 +260,32 @@ trace_plot(
   theme_bw() + 
   theme(aspect.ratio = 1)
 ```
+
+```{r}
+# Plot tree 8 versus some others to see if any noticeable differences
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = 1:3,
+  color_by_id = T, 
+  facet_by_id = T
+) + 
+  theme_bw() + 
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+# Plot tree 8 versus some others to see if any noticeable differences
+trace_plot(
+  rf = penguin.rf,
+  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
+  tree_ids = 1:3,
+  color_by_id = T,
+  max_depth = 4
+) + 
+  theme_bw() + 
+  theme(aspect.ratio = 1)
+```
+
 
 ## References

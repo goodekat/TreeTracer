@@ -32,7 +32,7 @@ plot_tree_preds <- function(rf, data, t1, t2) {
     ) %>%
     mutate(agree = t1 == t2) %>%
     mutate(t1 = factor(t1), t2 = factor(t2)) %>%
-    select(agree, everything())
+    select(.data$agree, everything())
 
   GGally::ggpairs(data, ggplot2::aes(color = plot_data$agree)) +
     labs(x = paste("Tree", t1), y = paste("Tree", t2))

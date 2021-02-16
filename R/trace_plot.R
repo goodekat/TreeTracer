@@ -12,7 +12,7 @@
 #' @export trace_plot
 #'
 #' @importFrom dplyr %>% distinct select
-#' @importFrom ggplot2 aes element_blank ggplot geom_line geom_point geom_segment geom_text labs scale_x_continuous theme
+#' @importFrom ggplot2 aes element_blank facet_wrap ggplot geom_line geom_point geom_segment geom_text labs scale_x_continuous theme
 #' @importFrom purrr map_df
 #' @importFrom Rdpack reprompt
 #' @importFrom rlang .data
@@ -25,6 +25,8 @@
 #' @param alpha alpha value for the lines in the trace plot (a number between 0
 #'              and 1; default is 0.5)
 #' @param color_by_id should the trace lines be colored by the tree IDs? (default if FALSE)
+#' @param facet_by_id should the traces be faceted by tree IDs? (default if FALSE)
+#' @param max_depth the deepest level to include in the trace plot (set to NULl by default)
 #' @param rep_tree option to add a "representative tree" on top of the trace plot by providing
 #'                 a data frame with the structure of the get_tree_data function (NULL by default)
 #' @param rep_tree_size line size of "representative tree" (1 by default)
@@ -61,6 +63,8 @@ trace_plot <- function(rf,
                        width = 0.8,
                        alpha = 0.5,
                        color_by_id = FALSE,
+                       facet_by_id = FALSE,
+                       max_depth = NULL,
                        rep_tree = NULL,
                        rep_tree_size = 1,
                        rep_tree_color = "blue",
@@ -96,6 +100,11 @@ trace_plot <- function(rf,
   tree_branches = sort(unique(trace_data$tree_branch))
   tree_levels = sort(unique(trace_data$tree_level), decreasing = TRUE)
   split_vars = unique(trace_data$split_var)
+
+  # Keep only a subset of tree levels if requested
+  if (!is.null(max_depth)) {
+    trace_data <- trace_data %>% filter(.data$tree_level <= max_depth)
+  }
 
   # Convert categorical variables to factors
   trace_data <-
@@ -202,6 +211,11 @@ trace_plot <- function(rf,
         color = rep_tree_color,
         shape = 124
       )
+  }
+
+  # Facet by tree ID if requested
+  if (facet_by_id == TRUE) {
+    trace_plot <- trace_plot + facet_wrap(. ~ .data$tree)
   }
 
   # Format trace plot

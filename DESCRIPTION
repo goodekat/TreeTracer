@@ -22,6 +22,7 @@ Imports:
   purrr,
   Rdpack,
   stats,
+  stringr,
   textshape,
   tidyr,
   utils
