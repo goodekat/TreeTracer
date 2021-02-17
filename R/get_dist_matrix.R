@@ -22,7 +22,7 @@
 #'
 #' # Fit a random forest
 #' set.seed(71)
-#' penguin.rf <-
+#' penguin_rf <-
 #'   randomForest::randomForest(
 #'     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
 #'     data = penguins,
@@ -30,7 +30,7 @@
 #'   )
 #'
 #' # Compute fit metrics between all trees
-#' fit_metrics <- compute_fit_metric(penguin.rf, penguins)
+#' fit_metrics <- compute_fit_metric(penguin_rf, penguins)
 #'
 #' # Obtain the distance matrix
 #' get_dist_matrix(fit_metrics)

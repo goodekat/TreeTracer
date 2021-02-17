@@ -4,10 +4,12 @@
 \alias{get_trace_data}
 \title{Convert tree information from a random forest to the structure for a trace plot}
 \usage{
-get_trace_data(tree_data, train, width = 0.8)
+get_trace_data(tree_data, rf, train, width = 0.8)
 }
 \arguments{
 \item{tree_data}{data.frame obtained using get_tree_data}
+
+\item{rf}{random forest model}
 
 \item{train}{features used to train the random forest which the tree is from}
 
@@ -28,18 +30,19 @@ penguins <- na.omit(penguins)
 
 # Fit a random forest
 set.seed(71)
-penguin.rf <-
+penguin_rf <-
   randomForest::randomForest(
     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
     data = penguins
   )
 
 # Extract tree data from the first tree in the random forest
-tree_data <- get_tree_data(penguin.rf, 1)
+tree_data <- get_tree_data(penguin_rf, 1)
 
 # Obtain the trace data for the first tree in the random forest
 get_trace_data(
   tree_data = tree_data,
+  rf = penguin_rf,
   train = penguins \%>\%
     select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
   )

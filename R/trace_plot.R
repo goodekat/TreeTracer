@@ -11,7 +11,7 @@
 #'
 #' @export trace_plot
 #'
-#' @importFrom dplyr %>% distinct select
+#' @importFrom dplyr %>% arrange desc distinct select
 #' @importFrom ggplot2 aes element_blank facet_wrap ggplot geom_line geom_point geom_segment geom_text labs scale_x_continuous theme
 #' @importFrom purrr map_df
 #' @importFrom Rdpack reprompt
@@ -45,7 +45,7 @@
 #'
 #' # Fit a random forest
 #' set.seed(71)
-#' penguin.rf <-
+#' penguin_rf <-
 #'   randomForest::randomForest(
 #'     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
 #'     data = penguins
@@ -53,7 +53,7 @@
 #'
 #' # Generate a trace plot of the first 10 trees in the forest
 #' trace_plot(
-#'  rf = penguin.rf,
+#'  rf = penguin_rf,
 #'  train = penguins %>% select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g),
 #'  tree_ids = 1:10
 #' )
@@ -84,7 +84,7 @@ trace_plot <- function(rf,
         .f = function(id)
           get_tree_data(rf = rf , k = id)
       ) %>%
-      get_trace_data(train = train, width = width)
+      get_trace_data(rf = rf, train = train, width = width)
   } else {
     trace_data <-
       purrr::map_df(
@@ -94,14 +94,21 @@ trace_plot <- function(rf,
       ) %>%
       mutate(tree = as.character(.data$tree)) %>%
       bind_rows(rep_tree %>% mutate(tree = as.character("rep"))) %>%
-      get_trace_data(train = train, width = width)
+      get_trace_data(rf = rf, train = train, width = width)
   }
+
+  # Get the order of feature importance
+  feat_import <-
+    rf$importance %>%
+    data.frame() %>%
+    arrange(desc(.data$MeanDecreaseGini)) %>%
+    rownames()
 
   # Extract the levels that correspond to a tree
   trees = sort(unique(trace_data$tree))
   tree_branches = sort(unique(trace_data$tree_branch))
   tree_levels = sort(unique(trace_data$tree_level), decreasing = TRUE)
-  split_vars = unique(trace_data$split_var)
+  split_vars = feat_import
 
   # Keep only a subset of tree levels if requested
   if (!is.null(max_depth)) {
@@ -222,6 +229,6 @@ trace_plot <- function(rf,
 
   # Format trace plot
   trace_plot +
-    labs(x = "Split variable", y = "Tree level")
+    labs(x = "Split variable \n(most importance from left to right)", y = "Tree level")
 
 }

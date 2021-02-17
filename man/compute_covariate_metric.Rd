@@ -4,10 +4,13 @@
 \alias{compute_covariate_metric}
 \title{Computes metric comparing covariates from two trees}
 \usage{
-compute_covariate_metric(rf)
+compute_covariate_metric(rf, max_depth = NULL)
 }
 \arguments{
 \item{rf}{randomForest object from which to compute similarities between trees}
+
+\item{max_depth}{an option to set the maximum tree depth to consider when
+comparing trees (set to NULL by default)}
 }
 \description{
 Function for computing the fit metric from \insertCite{banerjee:2012;textual}{TreeTracer}.
@@ -22,7 +25,7 @@ penguins <- na.omit(penguins)
 
 # Fit a random forest
 set.seed(71)
-penguin.rf <-
+penguin_rf <-
   randomForest::randomForest(
     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
     data = penguins,
@@ -30,7 +33,7 @@ penguin.rf <-
   )
 
 # Compute fit metrics between all trees
-compute_covariate_metric(penguin.rf)
+compute_covariate_metric(penguin_rf)
 }
 \references{
 {

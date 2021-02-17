@@ -23,12 +23,12 @@ penguins <- na.omit(penguins)
 
 # Fit a random forest
 set.seed(71)
-penguin.rf <-
+penguin_rf <-
   randomForest::randomForest(
     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
     data = penguins
   )
 
 # Extract tree data from the first tree in the random forest
-get_tree_data(penguin.rf, 1)
+get_tree_data(penguin_rf, 1)
 }

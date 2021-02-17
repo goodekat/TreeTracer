@@ -6,6 +6,7 @@
 #' @importFrom tidyr pivot_longer
 #' @importFrom rlang .data
 #'
+#' @param rf random forest model
 #' @param tree_data data.frame obtained using get_tree_data
 #' @param train features used to train the random forest which the tree is from
 #' @param width specifies the width of the horizontal feature lines in a trace plot
@@ -22,23 +23,24 @@
 #'
 #' # Fit a random forest
 #' set.seed(71)
-#' penguin.rf <-
+#' penguin_rf <-
 #'   randomForest::randomForest(
 #'     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
 #'     data = penguins
 #'   )
 #'
 #' # Extract tree data from the first tree in the random forest
-#' tree_data <- get_tree_data(penguin.rf, 1)
+#' tree_data <- get_tree_data(penguin_rf, 1)
 #'
 #' # Obtain the trace data for the first tree in the random forest
 #' get_trace_data(
 #'   tree_data = tree_data,
+#'   rf = penguin_rf,
 #'   train = penguins %>%
 #'     select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
 #'   )
 
-get_trace_data <- function(tree_data, train, width = 0.8) {
+get_trace_data <- function(tree_data, rf, train, width = 0.8) {
 
   # tree_data: output from get_tree_data function
   # train: data frame with the variables used to train the model
@@ -49,13 +51,20 @@ get_trace_data <- function(tree_data, train, width = 0.8) {
   n_levels = length(unique(tree_data$tree_level))
   n_vars = length(unique(tree_data$split_var))
 
+  # Get the order of feature importance
+  feat_import <-
+    rf$importance %>%
+    data.frame() %>%
+    arrange(desc(.data$MeanDecreaseGini)) %>%
+    rownames()
+
   # Create the variable segments for the trace plot (includes all
   # possible tree levels and variables but may be reduced based on
   # those actually used by the tree(s))
   trace_grid <-
     data.frame(
       tree_level = unique(tree_data$tree_level),
-      split_var = rep(unique(tree_data$split_var), each = n_levels),
+      split_var = rep(feat_import, each = n_levels),
       seg_xmid = rep(1:n_vars, each = n_levels),
       seg_xmin = rep(1:n_vars + (width / 2), each = n_levels),
       seg_xmax = rep(1:n_vars - (width / 2), each = n_levels)
