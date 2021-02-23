@@ -10,6 +10,7 @@ trace_plot(
   tree_ids,
   width = 0.8,
   alpha = 0.5,
+  tree_color = "black",
   color_by_id = FALSE,
   facet_by_id = FALSE,
   nrow = NULL,
@@ -32,6 +33,8 @@ trace_plot(
 
 \item{alpha}{alpha value for the lines in the trace plot (a number between 0
 and 1; default is 0.5)}
+
+\item{tree_color}{color of the traces (default is "black")}
 
 \item{color_by_id}{should the trace lines be colored by the tree IDs? (default if FALSE)}
 

@@ -24,6 +24,7 @@
 #'              (a number between 0 and 1; default is 0.8)
 #' @param alpha alpha value for the lines in the trace plot (a number between 0
 #'              and 1; default is 0.5)
+#' @param tree_color color of the traces (default is "black")
 #' @param color_by_id should the trace lines be colored by the tree IDs? (default if FALSE)
 #' @param facet_by_id should the traces be faceted by tree IDs? (default if FALSE)
 #' @param nrow number of rows if facet_by_id is TRUE (othewise ignored)
@@ -63,6 +64,7 @@ trace_plot <- function(rf,
                        tree_ids,
                        width = 0.8,
                        alpha = 0.5,
+                       tree_color = "black",
                        color_by_id = FALSE,
                        facet_by_id = FALSE,
                        nrow = NULL,
@@ -178,11 +180,14 @@ trace_plot <- function(rf,
           y = .data$tree_level,
           group = factor(.data$tree):factor(.data$tree_branch)
         ),
-        alpha = alpha
+        alpha = alpha,
+        color = tree_color
       ) +
       geom_point(
         data = trace_data %>% filter(.data$tree != "rep"),
-        mapping = aes(x = .data$split_scaled, y = .data$tree_level), shape = 124)
+        mapping = aes(x = .data$split_scaled, y = .data$tree_level),
+        shape = 124,
+        color = tree_color)
   }
 
   # # Add text to plot
