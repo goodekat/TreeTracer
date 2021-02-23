@@ -46,17 +46,17 @@ get_trace_data <- function(tree_data, rf, train, width = 0.8) {
   # train: data frame with the variables used to train the model
   # width: value between 0 and 1 that determines the width of variable segments
 
-  # Determine the number of levels and variables used for splitting
-  # in the tree(s)
-  n_levels = length(unique(tree_data$tree_level))
-  n_vars = length(unique(tree_data$split_var))
-
   # Get the order of feature importance
   feat_import <-
     rf$importance %>%
     data.frame() %>%
     arrange(desc(.data$MeanDecreaseGini)) %>%
     rownames()
+
+  # Determine the number of levels and variables used for splitting
+  # in the tree(s)
+  n_levels = length(unique(tree_data$tree_level))
+  n_vars = length(feat_import)
 
   # Create the variable segments for the trace plot (includes all
   # possible tree levels and variables but may be reduced based on
@@ -74,7 +74,7 @@ get_trace_data <- function(tree_data, rf, train, width = 0.8) {
   # training data
   split_var_max_min <-
     train %>%
-    pivot_longer(names_to = "split_var", cols = everything()) %>%
+    tidyr::pivot_longer(names_to = "split_var", cols = everything()) %>%
     group_by(.data$split_var) %>%
     summarise(
       split_var_max = max(.data$value),
