@@ -190,15 +190,6 @@ trace_plot <- function(rf,
         color = tree_color)
   }
 
-  # # Add text to plot
-  # trace_plot <-
-  #   trace_plot +
-  #   geom_text(
-  #     data = trace_labels,
-  #     mapping = aes(x = .data$seg_xmid, y = .data$tree_level, label = .data$split_var),
-  #     nudge_y = -0.1
-  #   )
-
   # Add representative tree (if given)
   if (!is.null(rep_tree)) {
     trace_plot <-

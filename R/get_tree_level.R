@@ -7,5 +7,5 @@ get_tree_level <- function(df, node) {
   # very recursive
   if (node == 1) return(1)
   idx <- which(df$left_daughter == node | df$right_daughter == node)
-  1 + get_tree_level(df, df$parent[idx])
+  1 + get_tree_level(df, df$node[idx])
 }

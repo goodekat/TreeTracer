@@ -87,4 +87,73 @@ trace_plot(
   theme(aspect.ratio = 1)
 ```
 
+## Individual Tree Predictions
+
+```{r}
+# Predictions for one observation from one tree
+get_tree_pred(obs = penguins[1,], rf = penguin_rf, k = 1)
+```
+
+```{r}
+# Predictions from all trees for five observations
+tree_preds <- get_all_tree_preds(data = penguins[1:5,], rf = penguin_rf)
+head(tree_preds)
+```
+
+```{r eval = FALSE, include = FALSE}
+data = penguins[1:10,]
+rf = penguin_rf
+
+compute_partition_metric <- function(rf, data) {
+  
+  # Compute predictions for each tree in the random forest 
+  # for each of the specified observations
+  tree_preds = get_all_tree_preds(data = data, rf = rf)
+ 
+  # Compute leaf agreement with each tree
+  # XXX Need to figure out a smarter way to do this that won't use so
+  # much memory
+  leaf_agreement <-
+    purrr::map(
+      .x = 1,
+      .f = determine_leaf_agreement,
+      tree_preds = tree_preds
+    ) 
+
+}
+
+determine_leaf_agreement <- function(tree_id, tree_preds) {
+  
+  # Get prediction for one tree
+  tree_preds_filtered <- tree_preds %>% filter(tree_id == tree_id)
+  
+  # Extract the observation id and leaf number
+  id_and_leaf = tree_preds %>% select(obs_id, leaf_number)
+  
+  # Determine leaf agreement between all combinations of observations
+  data.frame(t(combn(tree_preds_filtered$obs_id, 2))) %>%
+    rename("obs_id1" = "X1", "obs_id2" = "X2") %>%
+    left_join(id_and_leaf, by = c("obs_id1" = "obs_id")) %>%
+    rename("leaf_number1" = "leaf_number") %>%
+    left_join(id_and_leaf, by = c("obs_id2" = "obs_id")) %>%
+    rename("leaf_number2" = "leaf_number") %>%
+    mutate(agree = as.numeric(leaf_number1 == leaf_number2)) %>%
+    mutate(tree_id = tree_id) %>%
+    select(tree_id, everything())
+
+}
+
+
+# tree2_agreement <- 
+#   data.frame(t(combn(preds_tree2_sub$id, 2))) %>%
+#   rename("id1" = "X1", "id2" = "X2") %>%
+#   left_join(id_and_leaf2, by = c("id1" = "id")) %>%
+#   rename("leaf_number1" = "leaf_number") %>%
+#   left_join(id_and_leaf2, by = c("id2" = "id")) %>%
+#   rename("leaf_number2" = "leaf_number") %>%
+#   mutate(agree = as.numeric(leaf_number1 == leaf_number2))
+# 
+# sum(abs(tree1_agreement$agree - tree2_agreement$agree)) / choose(dim(preds_tree1_sub)[1], 2)
+```
+
 ## References

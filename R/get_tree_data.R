@@ -30,26 +30,26 @@
 
 get_tree_data <- function(rf, k) {
 
-  # Extract the tree from the random forest and add a parent number
+  # Extract the tree from the random forest and add a node number
   tree <- randomForest::getTree(rf, k = k, labelVar = TRUE) %>% janitor::clean_names()
-  tree$parent <- 1:nrow(tree)
+  tree$node <- 1:nrow(tree)
 
   # Remove the tree leaves
   splits <- tree %>% filter(.data$status != -1)
 
   # Determine the tree level of each split
-  splits$tree_level <- sapply(splits$parent, function(i) get_tree_level(splits, i))
+  splits$tree_level <- sapply(splits$node, function(i) get_tree_level(splits, i))
 
   # Determine child and parent nodes
   segments <-
     rbind(
       data.frame(
         node_child = splits$left_daughter,
-        node_parent = splits$parent
+        node_parent = splits$node
       ),
       data.frame(
         node_child = splits$right_daughter,
-        node_parent = splits$parent
+        node_parent = splits$node
       )
     )
 
@@ -58,16 +58,16 @@ get_tree_data <- function(rf, k) {
   segments <-
     segments %>%
     left_join(
-      splits %>% select(.data$parent, .data$split_var, .data$split_point, .data$tree_level),
-      by = c("node_child" = "parent")) %>%
+      splits %>% select(.data$node, .data$split_var, .data$split_point, .data$tree_level),
+      by = c("node_child" = "node")) %>%
     rename(
       split_var_child = .data$split_var,
       split_point_child = .data$split_point,
       tree_level_child = .data$tree_level
     ) %>%
     left_join(
-      splits %>% select(.data$parent, .data$split_var, .data$split_point, .data$tree_level),
-      by = c("node_parent" = "parent")) %>%
+      splits %>% select(.data$node, .data$split_var, .data$split_point, .data$tree_level),
+      by = c("node_parent" = "node")) %>%
     rename(
       split_var_parent = .data$split_var,
       split_point_parent = .data$split_point,
