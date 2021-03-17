@@ -1,16 +1,9 @@
-#' Get a prediction using a specified tree from a random forest
+#' Get predictions from the individual trees in a random forest
 #'
-#' @export get_tree_pred
+#' @export get_tree_preds
 #'
-#' @importFrom dplyr %>% filter left_join mutate n pull rename select
-#' @importFrom janitor clean_names
-#' @importFrom randomForest getTree
-#' @importFrom rlang .data
-#'
-#' @param obs data frame with feature values for an observation to get a prediction for
+#' @param data data frame with feature values for observations to obtain predictions
 #' @param rf random forest model fit using randomForest
-#' @param k number identifying the tree in the random forest from which
-#'          to extract information
 #'
 #' @examples
 #'
@@ -26,10 +19,31 @@
 #'     data = penguins
 #'   )
 #'
-#' # Extract tree data from the first tree in the random forest
-#' get_tree_pred(penguins[1,], penguin_rf, 1)
+#' # Extract tree data corresponding to the first ten
+#' # observations in the data
+#' get_tree_preds(penguins[1:10,], penguin_rf)
 
-get_tree_pred <- function(obs, rf, k) {
+get_tree_preds <- function(data, rf) {
+
+  # Determine the number of observations and trees
+  nobs = dim(data)[1]
+  ntrees = rf$ntree
+
+  # Compute and join individual tree prediction for
+  # each tree in the random forest and given observation
+  purrr::map2_df(
+    .x = rep(1:nobs, ntrees),
+    .y = rep(1:ntrees, each = nobs),
+    .f = function(obs, tree) {
+      get_one_pred(data[obs, ], rf, tree) %>%
+        mutate(obs_id = obs, tree_id = tree) %>%
+        select(.data$obs_id, .data$tree_id, everything())
+    }
+  )
+
+}
+
+get_one_pred <- function(obs, rf, k) {
 
   # Extract the tree from the random forest and add a node number
   tree <- randomForest::getTree(rf, k = k, labelVar = TRUE) %>% janitor::clean_names()

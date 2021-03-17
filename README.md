@@ -1,5 +1,5 @@
 
-# TreeTracer 🌴 🖊
+# TreeTracer 🌲 🖊
 
 The beginnings…
 
@@ -87,30 +87,6 @@ trace_plot(
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
-
-## Individual Tree Predictions
-
-``` r
-# Predictions for one observation from one tree
-get_tree_pred(obs = penguins[1,], rf = penguin_rf, k = 1)
-```
-
-    ##   tree_id leaf_number prediction
-    ## 1       1           1     Adelie
-
-``` r
-# Predictions from all trees for five observations
-tree_preds <- get_all_tree_preds(data = penguins[1:5,], rf = penguin_rf)
-head(tree_preds)
-```
-
-    ##   obs_id tree_id leaf_number prediction
-    ## 1      1       1           1     Adelie
-    ## 2      2       1           1     Adelie
-    ## 3      3       1           1     Adelie
-    ## 4      4       1           1     Adelie
-    ## 5      5       1           1     Adelie
-    ## 6      1       2           2     Adelie
 
 ## References
 

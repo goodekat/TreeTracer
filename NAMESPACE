@@ -2,11 +2,11 @@
 
 export(compute_covariate_metric)
 export(compute_fit_metric)
-export(get_all_tree_preds)
+export(compute_partition_metric)
 export(get_dist_matrix)
 export(get_trace_data)
 export(get_tree_data)
-export(get_tree_pred)
+export(get_tree_preds)
 export(trace_plot)
 importFrom(Rdpack,reprompt)
 importFrom(dplyr,"%>%")
