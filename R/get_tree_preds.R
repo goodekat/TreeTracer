@@ -2,6 +2,9 @@
 #'
 #' @export get_tree_preds
 #'
+#' @importFrom furrr future_map2_dfr
+#' @importFrom future availableCores multisession plan
+#'
 #' @param data data frame with feature values for observations to obtain predictions
 #' @param rf random forest model fit using randomForest
 #'
@@ -16,12 +19,13 @@
 #' penguin_rf <-
 #'   randomForest::randomForest(
 #'     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
-#'     data = penguins
+#'     data = penguins,
+#'     ntree = 10
 #'   )
 #'
-#' # Extract tree data corresponding to the first ten
+#' # Extract tree data corresponding to the first five
 #' # observations in the data
-#' get_tree_preds(penguins[1:10,], penguin_rf)
+#' get_tree_preds(penguins[1:5,], penguin_rf)
 
 get_tree_preds <- function(data, rf) {
 
@@ -31,7 +35,9 @@ get_tree_preds <- function(data, rf) {
 
   # Compute and join individual tree prediction for
   # each tree in the random forest and given observation
-  purrr::map2_df(
+  no_cores <- future::availableCores() - 1
+  future::plan(future::multicore, workers = no_cores)
+  furrr::future_map2_dfr(
     .x = rep(1:nobs, ntrees),
     .y = rep(1:ntrees, each = nobs),
     .f = function(obs, tree) {
@@ -43,6 +49,7 @@ get_tree_preds <- function(data, rf) {
 
 }
 
+# Function for getting a prediction given one tree and one observation
 get_one_pred <- function(obs, rf, k) {
 
   # Extract the tree from the random forest and add a node number

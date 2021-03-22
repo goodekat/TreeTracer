@@ -25,10 +25,11 @@ set.seed(71)
 penguin_rf <-
   randomForest::randomForest(
     species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g,
-    data = penguins
+    data = penguins,
+    ntree = 10
   )
 
-# Extract tree data corresponding to the first ten
+# Extract tree data corresponding to the first five
 # observations in the data
-get_tree_preds(penguins[1:10,], penguin_rf)
+get_tree_preds(penguins[1:5,], penguin_rf)
 }
