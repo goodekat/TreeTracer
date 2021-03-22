@@ -36,7 +36,7 @@ get_tree_preds <- function(data, rf) {
   # Compute and join individual tree prediction for
   # each tree in the random forest and given observation
   no_cores <- future::availableCores() - 1
-  future::plan(future::multicore, workers = no_cores)
+  future::plan(future::multisession, workers = no_cores)
   furrr::future_map2_dfr(
     .x = rep(1:nobs, ntrees),
     .y = rep(1:ntrees, each = nobs),
