@@ -225,6 +225,9 @@ trace_plot <- function(rf,
 
   # Format trace plot
   trace_plot +
-    labs(x = "Split variable \n(most importance from left to right)", y = "Tree level")
+    labs(
+      x = "Split variable \n(ordered by random forest importance from left to right)",
+      y = "Tree level"
+    )
 
 }
