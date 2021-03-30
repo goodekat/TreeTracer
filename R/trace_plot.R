@@ -28,7 +28,9 @@
 #' @param color_by_id should the trace lines be colored by the tree IDs? (default if FALSE)
 #' @param facet_by_id should the traces be faceted by tree IDs? (default if FALSE)
 #' @param id_order order trees should be arranged by if facet_by_id is TRUE (optional)
-#' @param nrow number of rows if facet_by_id is TRUE (othewise ignored)
+#' @param cont_var continuous variable associated with the trees which can be used to
+#'                 color them (must be in the same order as tree_ids) (optional)
+#' @param nrow number of rows if facet_by_id is TRUE (otherwise ignored)
 #' @param max_depth the deepest level to include in the trace plot (set to NULl by default)
 #' @param rep_tree option to add a "representative tree" on top of the trace plot by providing
 #'                 a data frame with the structure of the get_tree_data function (NULL by default)
@@ -69,6 +71,7 @@ trace_plot <- function(rf,
                        color_by_id = FALSE,
                        facet_by_id = FALSE,
                        id_order = NULL,
+                       cont_var = NULL,
                        nrow = NULL,
                        max_depth = NULL,
                        rep_tree = NULL,
@@ -138,6 +141,13 @@ trace_plot <- function(rf,
       mutate(tree = factor(.data$tree, levels = id_order))
   }
 
+  # Attach the continuous variable to the tree data frame
+  if (!is.null(cont_var)) {
+    if (is.null(id_order)) {id_order = trees} else {id_order = id_order}
+    cont_var_df <- data.frame(cont_var = cont_var) %>% mutate(tree = factor(.data$tree_ids, levels = id_order))
+    trace_data <- trace_data %>% left_join(cont_var_df, by = "tree")
+  }
+
   # Create a trace plot
   trace_plot <-
     ggplot(trace_data) +
@@ -175,6 +185,29 @@ trace_plot <- function(rf,
         shape = 124
       ) +
       labs(color = "Tree ID")
+  } else if (!is.null(cont_var)) {
+    trace_plot <-
+      trace_plot +
+      geom_line(
+        data = trace_data %>% filter(.data$tree != "rep"),
+        mapping = aes(
+          x = .data$split_scaled,
+          y = .data$tree_level,
+          group = .data$tree:.data$tree_branch,
+          color = .data$cont_var
+        ),
+        alpha = alpha
+      ) +
+      geom_point(
+        data = trace_data %>% filter(.data$tree != "rep"),
+        mapping = aes(
+          x = .data$split_scaled,
+          y = .data$tree_level,
+          color = .data$cont_var
+        ),
+        shape = 124
+      ) +
+      labs(color = "Added Variable \n(adjust as needed)")
   } else {
     trace_plot <-
       trace_plot +

@@ -14,6 +14,7 @@ trace_plot(
   color_by_id = FALSE,
   facet_by_id = FALSE,
   id_order = NULL,
+  cont_var = NULL,
   nrow = NULL,
   max_depth = NULL,
   rep_tree = NULL,
@@ -43,7 +44,10 @@ and 1; default is 0.5)}
 
 \item{id_order}{order trees should be arranged by if facet_by_id is TRUE (optional)}
 
-\item{nrow}{number of rows if facet_by_id is TRUE (othewise ignored)}
+\item{cont_var}{continuous variable associated with the trees which can be used to
+color them (must be in the same order as tree_ids) (optional)}
+
+\item{nrow}{number of rows if facet_by_id is TRUE (otherwise ignored)}
 
 \item{max_depth}{the deepest level to include in the trace plot (set to NULl by default)}
 
