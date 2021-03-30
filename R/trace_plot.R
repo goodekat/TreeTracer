@@ -144,7 +144,7 @@ trace_plot <- function(rf,
   # Attach the continuous variable to the tree data frame
   if (!is.null(cont_var)) {
     if (is.null(id_order)) {id_order = trees} else {id_order = id_order}
-    cont_var_df <- data.frame(cont_var = cont_var) %>% mutate(tree = factor(.data$tree_ids, levels = id_order))
+    cont_var_df <- data.frame(cont_var = cont_var) %>% mutate(tree = factor(tree_ids, levels = id_order))
     trace_data <- trace_data %>% left_join(cont_var_df, by = "tree")
   }
 
