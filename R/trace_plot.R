@@ -27,6 +27,7 @@
 #' @param tree_color color of the traces (default is "black")
 #' @param color_by_id should the trace lines be colored by the tree IDs? (default if FALSE)
 #' @param facet_by_id should the traces be faceted by tree IDs? (default if FALSE)
+#' @param id_order order trees should be arranged by if facet_by_id is TRUE (optional)
 #' @param nrow number of rows if facet_by_id is TRUE (othewise ignored)
 #' @param max_depth the deepest level to include in the trace plot (set to NULl by default)
 #' @param rep_tree option to add a "representative tree" on top of the trace plot by providing
@@ -67,16 +68,13 @@ trace_plot <- function(rf,
                        tree_color = "black",
                        color_by_id = FALSE,
                        facet_by_id = FALSE,
+                       id_order = NULL,
                        nrow = NULL,
                        max_depth = NULL,
                        rep_tree = NULL,
                        rep_tree_size = 1,
                        rep_tree_color = "blue",
                        rep_tree_alpha = 1) {
-
-
-  # trace_data: output from get_trace_data function
-  # alpha: alpha to use for the lines in the plot
 
   # Obtain the trace data from the specified trees
   if (is.null(rep_tree)) {
@@ -132,6 +130,13 @@ trace_plot <- function(rf,
     trace_data %>%
     select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
     distinct()
+
+  # Order the tree if specified
+  if (!is.null(id_order)) {
+    trace_data <-
+      trace_data %>%
+      mutate(tree = factor(.data$tree, levels = id_order))
+  }
 
   # Create a trace plot
   trace_plot <-

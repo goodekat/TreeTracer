@@ -13,6 +13,7 @@ trace_plot(
   tree_color = "black",
   color_by_id = FALSE,
   facet_by_id = FALSE,
+  id_order = NULL,
   nrow = NULL,
   max_depth = NULL,
   rep_tree = NULL,
@@ -39,6 +40,8 @@ and 1; default is 0.5)}
 \item{color_by_id}{should the trace lines be colored by the tree IDs? (default if FALSE)}
 
 \item{facet_by_id}{should the traces be faceted by tree IDs? (default if FALSE)}
+
+\item{id_order}{order trees should be arranged by if facet_by_id is TRUE (optional)}
 
 \item{nrow}{number of rows if facet_by_id is TRUE (othewise ignored)}
 

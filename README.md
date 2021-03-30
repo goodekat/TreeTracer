@@ -1,5 +1,5 @@
 
-# TreeTracer 🎋 🖊
+# TreeTracer 🎄 🖊
 
 The beginnings…
 
@@ -90,14 +90,14 @@ trace_plot(
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
-<div id="ref-urbanek:2008">
+<div id="ref-urbanek:2008" class="csl-entry">
 
-Urbanek, Simon. 2008. “Visualizing Trees and Forests.” In *Handbook of
-Data Visualization*, edited by Chun-houh Chen, Wolfgang Härdle, and
-Antony Unwin, 3:243–66. Berlin, Germany: Springer-Verlag.
-<https://doi.org/10.1007/978-3-540-33037-0>.
+Urbanek, Simon. 2008. “<span class="nocase">Visualizing Trees and
+Forests</span>.” In *Handbook of Data Visualization*, edited by
+Chun-houh Chen, Wolfgang Härdle, and Antony Unwin, 3:243–66. Berlin,
+Germany: Springer-Verlag. <https://doi.org/10.1007/978-3-540-33037-0>.
 
 </div>
 
