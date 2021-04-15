@@ -14,6 +14,7 @@ trace_plot(
   color_by_id = FALSE,
   facet_by_id = FALSE,
   id_order = NULL,
+  split_var_order = "rf_vi",
   cont_var = NULL,
   nrow = NULL,
   max_depth = NULL,
@@ -43,6 +44,11 @@ and 1; default is 0.5)}
 \item{facet_by_id}{should the traces be faceted by tree IDs? (default if FALSE)}
 
 \item{id_order}{order trees should be arranged by if facet_by_id is TRUE (optional)}
+
+\item{split_var_order}{order of the split variables on the x-axis (left to right) specified
+either manually as a vector of variable names or as "rf_vi" to indicate that
+the variables should be ordered by random forest variable importance
+(default is "rf_vi")}
 
 \item{cont_var}{continuous variable associated with the trees which can be used to
 color them (must be in the same order as tree_ids) (optional)}

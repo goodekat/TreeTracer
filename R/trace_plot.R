@@ -28,12 +28,16 @@
 #' @param color_by_id should the trace lines be colored by the tree IDs? (default if FALSE)
 #' @param facet_by_id should the traces be faceted by tree IDs? (default if FALSE)
 #' @param id_order order trees should be arranged by if facet_by_id is TRUE (optional)
+#' @param split_var_order order of the split variables on the x-axis (left to right) specified
+#'              either manually as a vector of variable names or as "rf_vi" to indicate that
+#'              the variables should be ordered by random forest variable importance
+#'              (default is "rf_vi")
 #' @param cont_var continuous variable associated with the trees which can be used to
-#'                 color them (must be in the same order as tree_ids) (optional)
+#'              color them (must be in the same order as tree_ids) (optional)
 #' @param nrow number of rows if facet_by_id is TRUE (otherwise ignored)
 #' @param max_depth the deepest level to include in the trace plot (set to NULl by default)
 #' @param rep_tree option to add a "representative tree" on top of the trace plot by providing
-#'                 a data frame with the structure of the get_tree_data function (NULL by default)
+#'              a data frame with the structure of the get_tree_data function (NULL by default)
 #' @param rep_tree_size line size of "representative tree" (1 by default)
 #' @param rep_tree_color line color of "representative tree" ("blue" by default)
 #' @param rep_tree_alpha line alpha of "representative tree" (1 by default)
@@ -71,6 +75,7 @@ trace_plot <- function(rf,
                        color_by_id = FALSE,
                        facet_by_id = FALSE,
                        id_order = NULL,
+                       split_var_order = "rf_vi",
                        cont_var = NULL,
                        nrow = NULL,
                        max_depth = NULL,
@@ -87,7 +92,7 @@ trace_plot <- function(rf,
         .f = function(id)
           get_tree_data(rf = rf , k = id)
       ) %>%
-      get_trace_data(rf = rf, train = train, width = width)
+      get_trace_data(rf = rf, train = train, width = width, split_var_order = split_var_order)
   } else {
     trace_data <-
       purrr::map_df(
@@ -97,21 +102,35 @@ trace_plot <- function(rf,
       ) %>%
       mutate(tree = as.character(.data$tree)) %>%
       bind_rows(rep_tree %>% mutate(tree = as.character("rep"))) %>%
-      get_trace_data(rf = rf, train = train, width = width)
+      get_trace_data(rf = rf, train = train, width = width, split_var_order = split_var_order)
   }
 
   # Get the order of feature importance
-  feat_import <-
-    rf$importance %>%
-    data.frame() %>%
-    arrange(desc(.data$MeanDecreaseGini)) %>%
-    rownames()
+  if ("rf_vi" %in% split_var_order) {
+    if (rf$type == "classification") {
+      feat_import <-
+        rf$importance %>%
+        data.frame() %>%
+        arrange(desc(.data$MeanDecreaseGini)) %>%
+        rownames()
+    } else if (rf$type == "regression") {
+      feat_import <-
+        rf$importance %>%
+        data.frame() %>%
+        arrange(desc(.data$IncNodePurity)) %>%
+        rownames()
+    }
+  }
 
   # Extract the levels that correspond to a tree
   trees = sort(unique(trace_data$tree))
   tree_branches = sort(unique(trace_data$tree_branch))
   tree_levels = sort(unique(trace_data$tree_level), decreasing = TRUE)
-  split_vars = feat_import
+  if ("rf_vi" %in% split_var_order) {
+    split_vars = feat_import
+  } else {
+    split_vars = split_var_order
+  }
 
   # Keep only a subset of tree levels if requested
   if (!is.null(max_depth)) {
@@ -125,7 +144,7 @@ trace_plot <- function(rf,
       tree = factor(.data$tree, levels = trees),
       tree_branch = factor(.data$tree_branch, levels = tree_branches),
       tree_level = factor(.data$tree_level, levels = tree_levels),
-      split_vars = factor(.data$split_var, levels = split_vars)
+      split_var = factor(.data$split_var, levels = split_vars)
     )
 
   # Extract the split variables to use as labels in the trace plot

@@ -4,7 +4,7 @@
 \alias{get_trace_data}
 \title{Convert tree information from a random forest to the structure for a trace plot}
 \usage{
-get_trace_data(tree_data, rf, train, width = 0.8)
+get_trace_data(tree_data, rf, train, width = 0.8, split_var_order = "rf_vi")
 }
 \arguments{
 \item{tree_data}{data.frame obtained using get_tree_data}
@@ -15,6 +15,11 @@ get_trace_data(tree_data, rf, train, width = 0.8)
 
 \item{width}{specifies the width of the horizontal feature lines in a trace plot
 (a number between 0 and 1; default is 0.8)}
+
+\item{split_var_order}{order of the split variables on the x-axis (left to right) specified
+either manually as a vector of variable names or as "rf_vi" to indicate that
+the variables should be ordered by random forest variable importance
+(default is "rf_vi")}
 }
 \description{
 Convert tree information from a random forest to the structure for a trace plot

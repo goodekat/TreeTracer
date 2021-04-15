@@ -11,6 +11,10 @@
 #' @param train features used to train the random forest which the tree is from
 #' @param width specifies the width of the horizontal feature lines in a trace plot
 #'              (a number between 0 and 1; default is 0.8)
+#' @param split_var_order order of the split variables on the x-axis (left to right) specified
+#'              either manually as a vector of variable names or as "rf_vi" to indicate that
+#'              the variables should be ordered by random forest variable importance
+#'              (default is "rf_vi")
 #'
 #' @examples
 #'
@@ -40,23 +44,40 @@
 #'     select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
 #'   )
 
-get_trace_data <- function(tree_data, rf, train, width = 0.8) {
+get_trace_data <- function(tree_data, rf, train, width = 0.8, split_var_order = "rf_vi") {
 
   # tree_data: output from get_tree_data function
   # train: data frame with the variables used to train the model
   # width: value between 0 and 1 that determines the width of variable segments
 
   # Get the order of feature importance
-  feat_import <-
-    rf$importance %>%
-    data.frame() %>%
-    arrange(desc(.data$MeanDecreaseGini)) %>%
-    rownames()
+  if ("rf_vi" %in% split_var_order) {
+    if (rf$type == "classification") {
+      feat_import <-
+        rf$importance %>%
+        data.frame() %>%
+        arrange(desc(.data$MeanDecreaseGini)) %>%
+        rownames()
+    } else if (rf$type == "regression") {
+      feat_import <-
+        rf$importance %>%
+        data.frame() %>%
+        arrange(desc(.data$IncNodePurity)) %>%
+        rownames()
+    }
+  }
+
+  # Specify the split variables
+  if ("rf_vi" %in% split_var_order) {
+    split_vars = feat_import
+  } else {
+    split_vars = split_var_order
+  }
 
   # Determine the number of levels and variables used for splitting
   # in the tree(s)
   n_levels = length(unique(tree_data$tree_level))
-  n_vars = length(feat_import)
+  n_vars = length(split_vars)
 
   # Create the variable segments for the trace plot (includes all
   # possible tree levels and variables but may be reduced based on
@@ -64,7 +85,7 @@ get_trace_data <- function(tree_data, rf, train, width = 0.8) {
   trace_grid <-
     data.frame(
       tree_level = unique(tree_data$tree_level),
-      split_var = rep(feat_import, each = n_levels),
+      split_var = rep(split_vars, each = n_levels),
       seg_xmid = rep(1:n_vars, each = n_levels),
       seg_xmin = rep(1:n_vars + (width / 2), each = n_levels),
       seg_xmax = rep(1:n_vars - (width / 2), each = n_levels)
