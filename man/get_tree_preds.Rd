@@ -31,5 +31,5 @@ penguin_rf <-
 
 # Extract tree data corresponding to the first five
 # observations in the data
-get_tree_preds(penguins[1:5,], penguin_rf)
+get_tree_preds(penguins[1,], penguin_rf)
 }

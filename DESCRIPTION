@@ -26,5 +26,7 @@ Imports:
   textshape,
   tidyr,
   utils
+Suggests:
+  rmarkdown
 RdMacros: Rdpack
 VignetteBuilder: knitr

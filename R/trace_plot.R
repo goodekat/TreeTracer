@@ -12,7 +12,7 @@
 #' @export trace_plot
 #'
 #' @importFrom dplyr %>% arrange desc distinct select
-#' @importFrom ggplot2 aes element_blank facet_wrap ggplot geom_line geom_point geom_segment geom_text labs scale_x_continuous theme
+#' @importFrom ggplot2 aes element_blank facet_wrap ggplot geom_line geom_point geom_segment geom_text labs scale_x_continuous scale_x_discrete theme
 #' @importFrom purrr map_df
 #' @importFrom Rdpack reprompt
 #' @importFrom rlang .data
@@ -282,6 +282,7 @@ trace_plot <- function(rf,
 
   # Format trace plot
   trace_plot +
+    scale_x_discrete(drop = FALSE) +
     labs(
       x = "Split variable \n(ordered by random forest importance from left to right)",
       y = "Tree level"
