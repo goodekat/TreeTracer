@@ -167,15 +167,11 @@ trace_plot <- function(rf,
     trace_data <- trace_data %>% left_join(cont_var_df, by = "tree")
   }
 
-  trace_data <-
-    trace_data %>%
-    mutate(seg_alpha = ifelse(is.na(split_point), 0, 1))
-
   # Create a trace plot
   trace_plot <-
     ggplot(trace_data) +
     geom_segment(
-      data = trace_data %>% filter(!is.na(split_point)),
+      data = trace_data %>% filter(!is.na(.data$split_point)),
       mapping = aes(
         x = .data$seg_xmin,
         xend = .data$seg_xmax,

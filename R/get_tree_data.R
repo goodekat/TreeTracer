@@ -6,6 +6,7 @@
 #' @importFrom janitor clean_names
 #' @importFrom randomForest getTree
 #' @importFrom rlang .data
+#' @importFrom stats na.omit
 #'
 #' @param rf random forest model fit using randomForest
 #' @param k number identifying the tree in the random forest from which
@@ -72,7 +73,8 @@ get_tree_data <- function(rf, k) {
       split_var_parent = .data$split_var,
       split_point_parent = .data$split_point,
       tree_level_parent = .data$tree_level
-    )
+    ) %>%
+    na.omit()
 
   # Number the branches
   segments$branch_num <- 1:nrow(segments)
