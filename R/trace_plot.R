@@ -167,10 +167,15 @@ trace_plot <- function(rf,
     trace_data <- trace_data %>% left_join(cont_var_df, by = "tree")
   }
 
+  trace_data <-
+    trace_data %>%
+    mutate(seg_alpha = ifelse(is.na(split_point), 0, 1))
+
   # Create a trace plot
   trace_plot <-
     ggplot(trace_data) +
     geom_segment(
+      data = trace_data %>% filter(!is.na(split_point)),
       mapping = aes(
         x = .data$seg_xmin,
         xend = .data$seg_xmax,
@@ -178,7 +183,7 @@ trace_plot <- function(rf,
         yend = .data$tree_level
       )
     ) +
-    scale_x_continuous(breaks = 1:length(split_vars), labels = split_vars)
+    scale_x_continuous(breaks = 1:length(split_vars), labels = split_vars, limits = c(0.5,length(split_vars) + .5))
 
   # Add color to the plot
   if (color_by_id == TRUE) {
@@ -282,7 +287,7 @@ trace_plot <- function(rf,
 
   # Format trace plot
   trace_plot +
-    scale_x_discrete(drop = FALSE) +
+    #scale_x_discrete(drop = FALSE) +
     labs(
       x = "Split variable \n(ordered by random forest importance from left to right)",
       y = "Tree level"
