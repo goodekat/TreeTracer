@@ -107,7 +107,7 @@ get_trace_data <- function(tree_data, rf, train, width = 0.8, split_var_order = 
   # corresponding rows of the trace_grid with the tree_data and
   # scaling the variable split points to the trace grid
   trace_data <-
-    full_join(x = tree_data,
+    left_join(x = tree_data,
               y = trace_grid,
               by = c("tree_level", "split_var")) %>%
     left_join(y = split_var_max_min, by = "split_var") %>%

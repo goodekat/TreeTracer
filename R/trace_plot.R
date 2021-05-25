@@ -171,7 +171,6 @@ trace_plot <- function(rf,
   trace_plot <-
     ggplot(trace_data) +
     geom_segment(
-      data = trace_data %>% filter(!is.na(.data$split_point)),
       mapping = aes(
         x = .data$seg_xmin,
         xend = .data$seg_xmax,
