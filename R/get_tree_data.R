@@ -41,53 +41,63 @@ get_tree_data <- function(rf, k) {
   # Determine the tree level of each split
   splits$tree_level <- sapply(splits$node, function(i) get_tree_level(splits, i))
 
-  # Determine child and parent nodes
-  segments <-
-    rbind(
+  # If the tree only has one split, create the tree data differently
+  if (dim(splits)[1] == 1) {
+    with(
+      splits,
       data.frame(
-        node_child = splits$left_daughter,
-        node_parent = splits$node
-      ),
-      data.frame(
-        node_child = splits$right_daughter,
-        node_parent = splits$node
+        tree = k,
+        tree_level = tree_level,
+        tree_branch = 1,
+        split_var = split_var,
+        split_point = split_point
       )
     )
+  } else {
+    # Determine child and parent nodes
+    segments <-
+      with(splits, rbind(
+        data.frame(node_child = left_daughter,
+                   node_parent = node),
+        data.frame(node_child = right_daughter,
+                   node_parent = node)
+      ))
 
-  # Add split variable, split point, and tree level information for
-  # both child and parent nodes
-  segments <-
-    segments %>%
-    left_join(
-      splits %>% select(.data$node, .data$split_var, .data$split_point, .data$tree_level),
-      by = c("node_child" = "node")) %>%
-    rename(
-      split_var_child = .data$split_var,
-      split_point_child = .data$split_point,
-      tree_level_child = .data$tree_level
-    ) %>%
-    left_join(
-      splits %>% select(.data$node, .data$split_var, .data$split_point, .data$tree_level),
-      by = c("node_parent" = "node")) %>%
-    rename(
-      split_var_parent = .data$split_var,
-      split_point_parent = .data$split_point,
-      tree_level_parent = .data$tree_level
-    ) %>%
-    na.omit()
+    # Add split variable, split point, and tree level information for
+    # both child and parent nodes
+    segments <-
+      segments %>%
+      left_join(
+        splits %>% select(.data$node, .data$split_var, .data$split_point, .data$tree_level),
+        by = c("node_child" = "node")) %>%
+      rename(
+        split_var_child = .data$split_var,
+        split_point_child = .data$split_point,
+        tree_level_child = .data$tree_level
+      ) %>%
+      left_join(
+        splits %>% select(.data$node, .data$split_var, .data$split_point, .data$tree_level),
+        by = c("node_parent" = "node")) %>%
+      rename(
+        split_var_parent = .data$split_var,
+        split_point_parent = .data$split_point,
+        tree_level_parent = .data$tree_level
+      ) %>%
+      na.omit()
 
-  # Number the branches
-  segments$branch_num <- 1:nrow(segments)
+    # Number the branches
+    segments$branch_num <- 1:nrow(segments)
 
-  # Convert to a long data frame and add a tree number
-  with(segments, data.frame(
-    tree = k,
-    tree_level = c(tree_level_child, tree_level_parent),
-    tree_branch = c(branch_num, branch_num),
-    split_var = c(as.character(split_var_child), as.character(split_var_parent)),
-    split_point = c(split_point_child, split_point_parent)
-  )) %>%
-    arrange(.data$tree, .data$tree_branch, .data$tree_level) %>%
-    filter(!is.na(.data$split_var))
+    # Convert to a long data frame and add a tree number
+    with(segments, data.frame(
+      tree = k,
+      tree_level = c(tree_level_child, tree_level_parent),
+      tree_branch = c(branch_num, branch_num),
+      split_var = c(as.character(split_var_child), as.character(split_var_parent)),
+      split_point = c(split_point_child, split_point_parent)
+    )) %>%
+      arrange(.data$tree, .data$tree_branch, .data$tree_level) #%>%
+      #filter(!is.na(.data$split_var))
+  }
 
 }
