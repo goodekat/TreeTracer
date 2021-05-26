@@ -55,7 +55,7 @@ color them (must be in the same order as tree_ids) (optional)}
 
 \item{nrow}{number of rows if facet_by_id is TRUE (otherwise ignored)}
 
-\item{max_depth}{the deepest level to include in the trace plot (set to NULl by default)}
+\item{max_depth}{the deepest depth to include in the trace plot (set to NULl by default)}
 
 \item{rep_tree}{option to add a "representative tree" on top of the trace plot by providing
 a data frame with the structure of the get_tree_data function (NULL by default)}

@@ -35,7 +35,7 @@
 #' @param cont_var continuous variable associated with the trees which can be used to
 #'              color them (must be in the same order as tree_ids) (optional)
 #' @param nrow number of rows if facet_by_id is TRUE (otherwise ignored)
-#' @param max_depth the deepest level to include in the trace plot (set to NULl by default)
+#' @param max_depth the deepest depth to include in the trace plot (set to NULl by default)
 #' @param rep_tree option to add a "representative tree" on top of the trace plot by providing
 #'              a data frame with the structure of the get_tree_data function (NULL by default)
 #' @param rep_tree_size line size of "representative tree" (1 by default)
@@ -122,19 +122,19 @@ trace_plot <- function(rf,
     }
   }
 
-  # Extract the levels that correspond to a tree
+  # Extract the depths that correspond to a tree
   trees = sort(unique(trace_data$tree))
   tree_branches = sort(unique(trace_data$tree_branch))
-  tree_levels = sort(unique(trace_data$tree_level), decreasing = TRUE)
+  node_depths = sort(unique(trace_data$node_depth), decreasing = TRUE)
   if ("rf_vi" %in% split_var_order) {
     split_vars = feat_import
   } else {
     split_vars = split_var_order
   }
 
-  # Keep only a subset of tree levels if requested
+  # Keep only a subset of tree depths if requested
   if (!is.null(max_depth)) {
-    trace_data <- trace_data %>% filter(.data$tree_level <= max_depth)
+    trace_data <- trace_data %>% filter(.data$node_depth <= max_depth)
   }
 
   # Convert categorical variables to factors
@@ -143,14 +143,14 @@ trace_plot <- function(rf,
     mutate(
       tree = factor(.data$tree, levels = trees),
       tree_branch = factor(.data$tree_branch, levels = tree_branches),
-      tree_level = factor(.data$tree_level, levels = tree_levels),
+      node_depth = factor(.data$node_depth, levels = node_depths),
       split_var = factor(.data$split_var, levels = split_vars)
     )
 
   # Extract the split variables to use as labels in the trace plot
   trace_labels <-
     trace_data %>%
-    select(.data$tree_level, .data$split_var, .data$seg_xmid) %>%
+    select(.data$node_depth, .data$split_var, .data$seg_xmid) %>%
     distinct()
 
   # Order the tree if specified
@@ -174,8 +174,8 @@ trace_plot <- function(rf,
       mapping = aes(
         x = .data$seg_xmin,
         xend = .data$seg_xmax,
-        y = .data$tree_level,
-        yend = .data$tree_level
+        y = .data$node_depth,
+        yend = .data$node_depth
       )
     ) +
     scale_x_continuous(breaks = 1:length(split_vars), labels = split_vars, limits = c(0.5,length(split_vars) + .5))
@@ -188,7 +188,7 @@ trace_plot <- function(rf,
         data = trace_data %>% filter(.data$tree != "rep"),
         mapping = aes(
           x = .data$split_scaled,
-          y = .data$tree_level,
+          y = .data$node_depth,
           group = .data$tree:.data$tree_branch,
           color = .data$tree
         ),
@@ -198,7 +198,7 @@ trace_plot <- function(rf,
         data = trace_data %>% filter(.data$tree != "rep"),
         mapping = aes(
           x = .data$split_scaled,
-          y = .data$tree_level,
+          y = .data$node_depth,
           color = .data$tree
         ),
         shape = 124
@@ -211,7 +211,7 @@ trace_plot <- function(rf,
         data = trace_data %>% filter(.data$tree != "rep"),
         mapping = aes(
           x = .data$split_scaled,
-          y = .data$tree_level,
+          y = .data$node_depth,
           group = .data$tree:.data$tree_branch,
           color = .data$cont_var
         ),
@@ -221,7 +221,7 @@ trace_plot <- function(rf,
         data = trace_data %>% filter(.data$tree != "rep"),
         mapping = aes(
           x = .data$split_scaled,
-          y = .data$tree_level,
+          y = .data$node_depth,
           color = .data$cont_var
         ),
         shape = 124
@@ -234,7 +234,7 @@ trace_plot <- function(rf,
         data = trace_data %>% filter(.data$tree != "rep"),
         mapping = aes(
           x = .data$split_scaled,
-          y = .data$tree_level,
+          y = .data$node_depth,
           group = factor(.data$tree):factor(.data$tree_branch)
         ),
         alpha = alpha,
@@ -242,7 +242,7 @@ trace_plot <- function(rf,
       ) +
       geom_point(
         data = trace_data %>% filter(.data$tree != "rep"),
-        mapping = aes(x = .data$split_scaled, y = .data$tree_level),
+        mapping = aes(x = .data$split_scaled, y = .data$node_depth),
         shape = 124,
         color = tree_color)
   }
@@ -255,7 +255,7 @@ trace_plot <- function(rf,
         data = trace_data %>% filter(.data$tree == "rep"),
         aes(
           x = .data$split_scaled,
-          y = .data$tree_level,
+          y = .data$node_depth,
           group = .data$tree_branch
         ),
         size = rep_tree_size,
@@ -266,7 +266,7 @@ trace_plot <- function(rf,
         data = trace_data %>% filter(.data$tree == "rep"),
         mapping = aes(
           x = .data$split_scaled,
-          y = .data$tree_level,
+          y = .data$node_depth,
           color = .data$tree
         ),
         size = rep_tree_size * 2,
@@ -285,7 +285,7 @@ trace_plot <- function(rf,
     #scale_x_discrete(drop = FALSE) +
     labs(
       x = "Split variable \n(ordered by random forest importance from left to right)",
-      y = "Tree level"
+      y = "Node depth"
     )
 
 }

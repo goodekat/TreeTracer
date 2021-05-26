@@ -67,32 +67,32 @@ get_one_pred <- function(obs, rf, k) {
     )
 
   # Determine the prediction and node number associated with obs
-  level_or_pred_df = 1
-  while (is.numeric(level_or_pred_df)) {
-    level_or_pred_df = get_next_level(obs, tree, k, level_or_pred_df)
+  depth_or_pred_df = 1
+  while (is.numeric(depth_or_pred_df)) {
+    depth_or_pred_df = get_next_depth(obs, tree, k, depth_or_pred_df)
   }
 
   # Return data frame with predictions
-  if (is.data.frame(level_or_pred_df)) {
-    return(level_or_pred_df)
+  if (is.data.frame(depth_or_pred_df)) {
+    return(depth_or_pred_df)
   } else {
     stop("something is wrong...")
   }
 
 }
 
-# Function for determining the next level in the tree to move to
-get_next_level <- function(obs, tree, k, current_level) {
-  level_data = tree[current_level,]
-  if (level_data$status == -1) {
+# Function for determining the next depth in the tree to move to
+get_next_depth <- function(obs, tree, k, current_depth) {
+  depth_data = tree[current_depth,]
+  if (depth_data$status == -1) {
     data.frame(
       tree_id = k,
-      leaf_number = level_data$leaf_number,
-      prediction = level_data$prediction
+      leaf_number = depth_data$leaf_number,
+      prediction = depth_data$prediction
     )
-  } else if (obs %>% pull(level_data$split_var) <= level_data$split_point) {
-    level_data$left_daughter
+  } else if (obs %>% pull(depth_data$split_var) <= depth_data$split_point) {
+    depth_data$left_daughter
   } else {
-    level_data$right_daughter
+    depth_data$right_daughter
   }
 }

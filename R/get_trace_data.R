@@ -74,21 +74,21 @@ get_trace_data <- function(tree_data, rf, train, width = 0.8, split_var_order = 
     split_vars = split_var_order
   }
 
-  # Determine the number of levels and variables used for splitting
+  # Determine the number of depths and variables used for splitting
   # in the tree(s)
-  n_levels = length(unique(tree_data$tree_level))
+  n_depths = length(unique(tree_data$node_depth))
   n_vars = length(split_vars)
 
   # Create the variable segments for the trace plot (includes all
-  # possible tree levels and variables but may be reduced based on
+  # possible tree depths and variables but may be reduced based on
   # those actually used by the tree(s))
   trace_grid <-
     data.frame(
-      tree_level = unique(tree_data$tree_level),
-      split_var = rep(split_vars, each = n_levels),
-      seg_xmid = rep(1:n_vars, each = n_levels),
-      seg_xmin = rep(1:n_vars + (width / 2), each = n_levels),
-      seg_xmax = rep(1:n_vars - (width / 2), each = n_levels)
+      node_depth = unique(tree_data$node_depth),
+      split_var = rep(split_vars, each = n_depths),
+      seg_xmid = rep(1:n_vars, each = n_depths),
+      seg_xmin = rep(1:n_vars + (width / 2), each = n_depths),
+      seg_xmax = rep(1:n_vars - (width / 2), each = n_depths)
     )
 
   # Compute the maximum and minimum var values from the
@@ -109,7 +109,7 @@ get_trace_data <- function(tree_data, rf, train, width = 0.8, split_var_order = 
   trace_data <-
     left_join(x = tree_data,
               y = trace_grid,
-              by = c("tree_level", "split_var")) %>%
+              by = c("node_depth", "split_var")) %>%
     left_join(y = split_var_max_min, by = "split_var") %>%
     group_by(.data$split_var) %>%
     mutate(n_splits = length(unique(.data$split_point))) %>%

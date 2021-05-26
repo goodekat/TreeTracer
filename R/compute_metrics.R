@@ -114,7 +114,7 @@ compute_covariate_metric <- function(rf, max_depth = NULL) {
     .x = 1:rf$ntree,
     .f = function(t) {
       get_tree_data(rf = rf, k = t) %>%
-        filter(.data$tree_level <= ifelse(is.null(max_depth), max(.data$tree_level), max_depth)) %>%
+        filter(.data$node_depth <= ifelse(is.null(max_depth), max(.data$node_depth), max_depth)) %>%
         select(.data$tree, .data$split_var) %>%
         distinct()
     }
