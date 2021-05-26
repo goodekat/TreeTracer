@@ -7,7 +7,7 @@
 compute_fit_metric(rf, data)
 }
 \arguments{
-\item{rf}{randomForest object from which to compute similarities between trees}
+\item{rf}{randomForest object from which to compute distances between trees}
 
 \item{data}{data frame with predictor variables used to fit the model (does
 not need to be the training data)}

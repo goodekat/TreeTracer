@@ -7,7 +7,7 @@
 compute_partition_metric(rf, tree_preds)
 }
 \arguments{
-\item{rf}{randomForest object from which to compute similarities between trees}
+\item{rf}{randomForest object from which to compute distances between trees}
 
 \item{tree_preds}{output from the function get_tree_preds}
 }

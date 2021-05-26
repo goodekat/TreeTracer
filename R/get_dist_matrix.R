@@ -1,6 +1,6 @@
-#' Convert data frame of similarities from compute_fit_metric to distance matrix
+#' Convert data frame of distances from compute_fit_metric to distance matrix
 #'
-#' The function converts the data frame of similarities computed using
+#' The function converts the data frame of distances computed using
 #' compute_fit_metric to a matrix of distances between all trees. Helpful to
 #' use for clustering.
 #'
@@ -50,7 +50,7 @@ get_dist_matrix <- function(fit_metrics) {
   tree_ids = unique(c(fit_metrics$t1, fit_metrics$t2))
 
   # Create a matrix with the "identity" metrics
-  iden <- data.frame(t1 = tree_ids, t2 = tree_ids, similarity = 1)
+  iden <- data.frame(t1 = tree_ids, t2 = tree_ids, distance = 1)
 
   # Join all metrics
   full <- bind_rows(orig, rev, iden)
@@ -58,8 +58,8 @@ get_dist_matrix <- function(fit_metrics) {
   # Convert the metrics to distances and put in a "dist" matrix
   dist_matrix <-
     full %>%
-    mutate(dist = 1 - .data$similarity) %>%
-    select(-.data$similarity) %>%
+    mutate(dist = .data$distance) %>%
+    select(-.data$distance) %>%
     mutate(t2 = paste0("tree", .data$t2)) %>%
     pivot_wider(names_from = .data$t2, values_from = .data$dist) %>%
     arrange(.data$t1) %>%

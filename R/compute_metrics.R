@@ -10,7 +10,7 @@
 #'
 #' @importFrom utils combn
 #'
-#' @param rf randomForest object from which to compute similarities between trees
+#' @param rf randomForest object from which to compute distances between trees
 #' @param data data frame with predictor variables used to fit the model (does
 #'        not need to be the training data)
 #'
@@ -49,9 +49,9 @@ compute_fit_metric <- function(rf, data) {
       t1 = tree_pairs[1,index]
       t2 = tree_pairs[2,index]
       if (rf$type == "classification") {
-        data.frame(t1 = t1, t2 = t2, similarity = fit_metric_class(all_pred, t1, t2))
+        data.frame(t1 = t1, t2 = t2, distance = fit_metric_class(all_pred, t1, t2))
       } else if (rf$type == "regression") {
-        data.frame(t1 = t1, t2 = t2, similarity = fit_metric_reg(all_pred, t1, t2))
+        data.frame(t1 = t1, t2 = t2, distance = fit_metric_reg(all_pred, t1, t2))
       }
     }
   )
@@ -59,7 +59,7 @@ compute_fit_metric <- function(rf, data) {
 }
 
 fit_metric_class <- function(all_pred, t1, t2) {
-  mean(all_pred$individual[, t1] == all_pred$individual[, t2])
+  mean(all_pred$individual[, t1] != all_pred$individual[, t2])
 }
 
 fit_metric_reg <- function(all_pred, t1, t2) {
@@ -81,7 +81,7 @@ fit_metric_reg <- function(all_pred, t1, t2) {
 #' @importFrom tidyr pivot_wider
 #' @importFrom utils combn
 #'
-#' @param rf randomForest object from which to compute similarities between trees
+#' @param rf randomForest object from which to compute distances between trees
 #' @param max_depth an option to set the maximum tree depth to consider when
 #'        comparing trees (set to NULL by default)
 #' @examples
@@ -139,7 +139,7 @@ compute_covariate_metric <- function(rf, max_depth = NULL) {
       data.frame(
         t1 = t1,
         t2 = t2,
-        similarity = sum(var_indicators[t1, -1] == var_indicators[t2, -1]) / k
+        distance = sum(var_indicators[t1, -1] != var_indicators[t2, -1]) / k
       )
     }
   )
@@ -159,7 +159,7 @@ compute_covariate_metric <- function(rf, max_depth = NULL) {
 #' @importFrom utils combn
 #' @importFrom dplyr n pull
 #'
-#' @param rf randomForest object from which to compute similarities between trees
+#' @param rf randomForest object from which to compute distances between trees
 #' @param tree_preds output from the function get_tree_preds
 #'
 #' @examples
@@ -219,7 +219,7 @@ compute_partition_metric <- function(rf, tree_preds) {
       data.frame(
         t1 = t1,
         t2 = t2,
-        similarity = 1 - (top / bottom)
+        distance = (top / bottom)
       )
     }
   )

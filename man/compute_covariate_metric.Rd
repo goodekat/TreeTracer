@@ -7,7 +7,7 @@
 compute_covariate_metric(rf, max_depth = NULL)
 }
 \arguments{
-\item{rf}{randomForest object from which to compute similarities between trees}
+\item{rf}{randomForest object from which to compute distances between trees}
 
 \item{max_depth}{an option to set the maximum tree depth to consider when
 comparing trees (set to NULL by default)}

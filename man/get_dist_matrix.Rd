@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_dist_matrix.R
 \name{get_dist_matrix}
 \alias{get_dist_matrix}
-\title{Convert data frame of similarities from compute_fit_metric to distance matrix}
+\title{Convert data frame of distances from compute_fit_metric to distance matrix}
 \usage{
 get_dist_matrix(fit_metrics)
 }
@@ -10,7 +10,7 @@ get_dist_matrix(fit_metrics)
 \item{fit_metrics}{output object from compute_fit_metric}
 }
 \description{
-The function converts the data frame of similarities computed using
+The function converts the data frame of distances computed using
 compute_fit_metric to a matrix of distances between all trees. Helpful to
 use for clustering.
 }
