@@ -87,8 +87,8 @@ get_trace_data <- function(tree_data, rf, train, width = 0.8, split_var_order = 
       node_depth = unique(tree_data$node_depth),
       split_var = rep(split_vars, each = n_depths),
       seg_xmid = rep(1:n_vars, each = n_depths),
-      seg_xmin = rep(1:n_vars + (width / 2), each = n_depths),
-      seg_xmax = rep(1:n_vars - (width / 2), each = n_depths)
+      seg_xmin = rep(1:n_vars - (width / 2), each = n_depths),
+      seg_xmax = rep(1:n_vars + (width / 2), each = n_depths)
     )
 
   # Compute the maximum and minimum var values from the
@@ -113,12 +113,9 @@ get_trace_data <- function(tree_data, rf, train, width = 0.8, split_var_order = 
     left_join(y = split_var_max_min, by = "split_var") %>%
     group_by(.data$split_var) %>%
     mutate(n_splits = length(unique(.data$split_point))) %>%
-    mutate(split_scaled = ifelse(
-      .data$n_splits == 1,
-      (.data$seg_xmax + .data$seg_xmin) / 2,
-      (.data$seg_xmax - .data$seg_xmin) / (.data$split_var_max - .data$split_var_min) *
-        (.data$split_point - .data$split_var_max) + .data$seg_xmax
-    ))
+    mutate(split_scaled = (.data$seg_xmax - .data$seg_xmin) / (.data$split_var_max - .data$split_var_min) *
+        (.data$split_point - .data$split_var_min) + .data$seg_xmin
+    )
 
   # Return the data to be used in the trace plot
   return(trace_data)
